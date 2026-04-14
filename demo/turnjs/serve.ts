@@ -31,5 +31,5 @@ const server = Bun.serve({
 });
 
 console.log(
-  `turn.js example running at http://${server.hostname}:${server.port}`,
+  `turn.js example running at http://${server.hostname}:${server.port}`
 );
