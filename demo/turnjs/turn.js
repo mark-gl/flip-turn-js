@@ -24,6 +24,29 @@
     vendor = "",
     PI = Math.PI,
     A90 = PI / 2,
+    requestAnimFrame =
+      window.requestAnimationFrame ||
+      window.webkitRequestAnimationFrame ||
+      window.mozRequestAnimationFrame ||
+      window.msRequestAnimationFrame ||
+      function (callback) {
+        return window.setTimeout(function () {
+          callback(
+            window.performance && typeof window.performance.now == "function"
+              ? window.performance.now()
+              : Date.now()
+          );
+        }, 16);
+      },
+    cancelAnimFrame =
+      window.cancelAnimationFrame ||
+      window.webkitCancelAnimationFrame ||
+      window.webkitCancelRequestAnimationFrame ||
+      window.mozCancelAnimationFrame ||
+      window.mozCancelRequestAnimationFrame ||
+      window.msCancelAnimationFrame ||
+      window.msCancelRequestAnimationFrame ||
+      window.clearTimeout,
     isTouch = "ontouchstart" in window,
     events = isTouch
       ? { start: "touchstart", move: "touchmove", end: "touchend" }
@@ -1945,7 +1968,8 @@
     animatef: function (point) {
       var data = this.data();
 
-      if (data.effect) clearInterval(data.effect.handle);
+      if (data.effect && data.effect.handle)
+        cancelAnimFrame(data.effect.handle);
 
       if (point) {
         if (!point.to.length) point.to = [point.to];
@@ -1959,34 +1983,46 @@
           diff = [],
           len = point.to.length,
           that = this,
-          fps = point.fps || 30,
-          time = -fps,
-          f = function () {
+          duration = Math.max(0, point.duration || 0),
+          startTime = null,
+          f = function (timestamp) {
             var j,
-              v = [];
-            time = Math.min(point.duration, time + fps);
+              v = [],
+              time;
+
+            if (startTime === null) startTime = timestamp;
+
+            time = Math.min(duration, timestamp - startTime);
 
             for (j = 0; j < len; j++)
-              v.push(
-                point.easing(1, time, point.from[j], diff[j], point.duration)
-              );
+              v.push(point.easing(1, time, point.from[j], diff[j], duration));
 
             point.frame(len == 1 ? v[0] : v);
 
-            if (time == point.duration) {
-              clearInterval(data.effect.handle);
+            if (time >= duration) {
+              if (data.effect && data.effect.handle)
+                cancelAnimFrame(data.effect.handle);
               delete data["effect"];
               that.data(data);
               if (point.complete) point.complete();
+            } else {
+              data.effect.handle = requestAnimFrame(f);
             }
           };
 
         for (j = 0; j < len; j++) diff.push(point.to[j] - point.from[j]);
 
         data.effect = point;
-        data.effect.handle = setInterval(f, fps);
         this.data(data);
-        f();
+
+        if (duration === 0) {
+          point.frame(len == 1 ? point.to[0] : point.to);
+          delete data["effect"];
+          that.data(data);
+          if (point.complete) point.complete();
+        } else {
+          data.effect.handle = requestAnimFrame(f);
+        }
       } else {
         delete data["effect"];
       }
