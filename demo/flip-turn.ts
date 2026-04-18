@@ -1,4 +1,4 @@
-import { createFlipTurn } from "../index";
+import { createFlipTurn } from "../src/flip-turn";
 
 (window as unknown as Record<string, unknown>).createFlipTurn = createFlipTurn;
 

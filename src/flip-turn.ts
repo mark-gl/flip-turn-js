@@ -1,3 +1,4 @@
+import type { FlipTurnApi } from "./api";
 import { createFlipTurnApi } from "./api";
 import { subscribeLifecycleEvent } from "./core/events";
 import {
@@ -21,9 +22,10 @@ import type { FlipTurnRenderer, FlipTurnRuntime } from "./runtime/runtime";
 import { stopAnimation } from "./turn/animation";
 import { stopActiveTurn } from "./turn/commands";
 import { bindInputEvents } from "./turn/input/binding";
-import type { FlipTurnApi } from "./types";
 
-type CreateFlipTurnConfig = {
+export type { FlipTurnApi };
+
+export type CreateFlipTurnConfig = {
   renderer?: FlipTurnRenderer;
 };
 
@@ -205,3 +207,5 @@ export function createFlipTurn(
   init();
   return api;
 }
+
+export default createFlipTurn;

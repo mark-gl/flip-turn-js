@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig([
   {
-    ignores: ["demo/turnjs/turn.js"],
+    ignores: ["demo/turnjs/turn.js", "dist/**"],
   },
   {
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],

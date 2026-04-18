@@ -2,19 +2,46 @@ import { subscribeLifecycleEvent } from "./core/events";
 import { cloneResolvedOptionsSnapshot } from "./core/options";
 import type {
   DisplayMode,
+  FlipTurnEventListener,
+  FlipTurnLifecycleEvent,
   FlipTurnOptions,
   FlipTurnState,
   PageSourceInput,
+  ResolvedFlipTurnOptions,
 } from "./core/types";
 import {
   currentPublicPageNumber,
   normalizePageIndex,
   normalizePublicPageNumber,
 } from "./layout/spread";
-import type { FlipTurnRuntime } from "./runtime/runtime";
+import type { EventSubscription, FlipTurnRuntime } from "./runtime/runtime";
 import { isAnimating, stopAnimation } from "./turn/animation";
 import { requestPageSet, requestTurn, stopActiveTurn } from "./turn/commands";
-import type { FlipTurnApi } from "./types";
+
+export type FlipTurnApi = {
+  update: (options: Partial<FlipTurnOptions>) => FlipTurnApi;
+  options: () => ResolvedFlipTurnOptions;
+  page: (pageNumber?: number) => number;
+  display: (displayMode?: DisplayMode) => DisplayMode;
+  next: () => boolean;
+  previous: () => boolean;
+  size: (
+    width?: number | null,
+    height?: number | null
+  ) => FlipTurnApi | { width: number | null; height: number | null };
+  setPages: (pages: PageSourceInput[]) => FlipTurnApi;
+  addPage: (pageSource: PageSourceInput, pageNumber?: number) => FlipTurnApi;
+  removePage: (pageNumber: number) => FlipTurnApi;
+  stop: () => void;
+  animating: () => boolean;
+  subscribe: (
+    eventName: FlipTurnLifecycleEvent,
+    listener: FlipTurnEventListener
+  ) => EventSubscription;
+  disable: () => void;
+  enable: () => void;
+  destroy: () => void;
+};
 
 type CreateApiArgs = {
   runtime: FlipTurnRuntime;
