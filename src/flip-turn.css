@@ -1,0 +1,149 @@
+.flip-turn-viewport {
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  --flip-turn-page-background: #fff;
+}
+
+.flip-turn-static-page,
+.flip-turn-window-page-frame,
+.flip-turn-page {
+  background-color: var(--flip-turn-page-background);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.flip-turn-static-page {
+  position: absolute;
+  inset: 0;
+}
+
+.flip-turn-static-left-page,
+.flip-turn-static-right-page {
+  width: 50%;
+  height: 100%;
+}
+
+.flip-turn-static-left-page {
+  left: 0;
+}
+
+.flip-turn-static-right-page {
+  left: 50%;
+}
+
+.flip-turn-static-single-page {
+  display: none;
+}
+
+.flip-turn-viewport.flip-turn-single .flip-turn-static-left-page,
+.flip-turn-viewport.flip-turn-single .flip-turn-static-right-page {
+  display: none;
+}
+
+.flip-turn-viewport.flip-turn-single .flip-turn-static-single-page {
+  display: block;
+  left: 0;
+  width: 100%;
+}
+
+.flip-turn-active-front-layer,
+.flip-turn-active-fold-layer,
+.flip-turn-active-back-shadow {
+  position: absolute;
+  pointer-events: none;
+}
+
+.flip-turn-window-layer,
+.flip-turn-source-parking-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.flip-turn-source-parking-slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.flip-turn-window-page-frame {
+  position: absolute;
+  overflow: hidden;
+}
+
+.flip-turn-page-face-node {
+  width: 100%;
+  height: 100%;
+}
+
+.flip-turn-active-front-layer {
+  overflow: hidden;
+}
+
+.flip-turn-active-front-rotator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+}
+
+.flip-turn-active-front-page {
+  overflow: visible;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: auto;
+  bottom: auto;
+}
+
+.flip-turn-active-front-rotator,
+.flip-turn-active-front-page,
+.flip-turn-active-fold-rotator,
+.flip-turn-active-fold-page,
+.flip-turn-active-fold-content {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
+}
+
+.flip-turn-active-fold-layer {
+  display: block;
+  visibility: hidden;
+  opacity: 0;
+  overflow: hidden;
+  z-index: 30;
+}
+
+.flip-turn-active-fold-rotator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: auto;
+  bottom: auto;
+  overflow: visible;
+}
+
+.flip-turn-active-fold-page {
+  position: relative;
+  overflow: hidden;
+}
+
+.flip-turn-active-fold-content,
+.flip-turn-active-front-shadow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: auto;
+  bottom: auto;
+}
+
+.flip-turn-active-back-shadow {
+  display: block;
+  visibility: hidden;
+  opacity: 0;
+  z-index: 25;
+}

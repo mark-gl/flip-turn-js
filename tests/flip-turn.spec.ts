@@ -2,9 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 
 async function waitForMagazine(page: Page) {
   await page
-    .locator("#magazine .turn-page")
+    .locator("#magazine .flip-turn-page")
     .first()
-    .waitFor({ state: "attached", timeout: 5000 });
+    .waitFor({ state: "attached", timeout: 1000 });
 }
 
 async function getMagazineBox(page: Page) {
