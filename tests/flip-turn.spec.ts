@@ -35,6 +35,10 @@ async function dragToPoint(
   await waitForRender(page);
 }
 
+async function expectFlipInProgress(page: Page) {
+  await expect(page.locator("#magazine")).toHaveClass(/flip-turn-flipping/);
+}
+
 async function openDouble(page: Page) {
   await page.goto("/");
   await waitForMagazine(page);
@@ -45,6 +49,16 @@ async function openDouble(page: Page) {
         margin: 0;
         padding: 0;
         background: #ccc;
+        display: block;
+        min-height: 0;
+      }
+
+      .settings {
+        display: none;
+      }
+
+      #magazine {
+        margin: 0;
       }
     `,
   });
@@ -53,28 +67,58 @@ async function openDouble(page: Page) {
 async function turnForwardByDrag(page: Page) {
   const box = await getMagazineBox(page);
   const startX = box.x + box.width - 5;
-  const startY = box.y + box.height - 5;
-  const endX = box.x + 5;
-  const endY = box.y + box.height / 2;
+  const startY = box.y + 5;
+  const endX = box.x + box.width * 0.35;
+  const endY = box.y + box.height * 0.45;
 
   await page.mouse.move(startX, startY);
   await page.mouse.down();
   await page.mouse.move(endX, endY, { steps: 30 });
   await page.mouse.up();
-  await page.waitForTimeout(800);
-  await waitForRender(page);
+}
+
+async function hasLeftPageVisible(page: Page): Promise<boolean> {
+  return (await page.locator("#base-left > *").count()) > 0;
+}
+
+async function turnToSecondSpread(page: Page) {
+  if (await hasLeftPageVisible(page)) {
+    return;
+  }
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await turnForwardByDrag(page);
+
+    try {
+      await expect
+        .poll(() => hasLeftPageVisible(page), {
+          timeout: 2000,
+        })
+        .toBe(true);
+
+      await waitForRender(page);
+      return;
+    } catch {
+      // Retry dragging in case the turn didn't work
+    }
+  }
 }
 
 async function openSingle(page: Page) {
-  await page.goto("/single");
-  await waitForMagazine(page);
+  await openDouble(page);
+  await page.locator("#button-single").evaluate((element) => {
+    (element as HTMLButtonElement).click();
+  });
+  await expect(page.locator("#magazine")).toHaveClass(/flip-turn-single/);
 }
 
 function registerPlaywrightSuite() {
-  test.describe("turn.js parity snapshots", () => {
+  test.describe("visual snapshot tests", () => {
     test("double initial", async ({ page }) => {
       await openDouble(page);
-      await expect(page).toHaveScreenshot("double-initial.png");
+      await expect(page.locator("#magazine")).toHaveScreenshot(
+        "double-initial.png"
+      );
     });
 
     test("double mid-curl top right corner", async ({ page }) => {
@@ -86,7 +130,10 @@ function registerPlaywrightSuite() {
       const targetY = box.y + box.height * 0.35;
 
       await dragToPoint(page, rightEdge, topEdge, targetX, targetY);
-      await expect(page).toHaveScreenshot("double-mid-curl-top-right.png");
+      await expectFlipInProgress(page);
+      await expect(page.locator("#magazine")).toHaveScreenshot(
+        "double-mid-curl-top-right.png"
+      );
       await page.mouse.up();
     });
 
@@ -95,31 +142,37 @@ function registerPlaywrightSuite() {
       const box = await getMagazineBox(page);
       const rightEdge = box.x + box.width - 5;
       const bottomEdge = box.y + box.height - 5;
-      const targetX = box.x + box.width * 0.65;
-      const targetY = box.y + box.height * 0.65;
+      const targetX = box.x + box.width * 0.72;
+      const targetY = box.y + box.height * 0.78;
 
       await dragToPoint(page, rightEdge, bottomEdge, targetX, targetY);
-      await expect(page).toHaveScreenshot("double-mid-curl-bottom-right.png");
+      await expectFlipInProgress(page);
+      await expect(page.locator("#magazine")).toHaveScreenshot(
+        "double-mid-curl-bottom-right.png"
+      );
       await page.mouse.up();
     });
 
     test("double mid-curl bottom left corner", async ({ page }) => {
       await openDouble(page);
-      await turnForwardByDrag(page);
+      await turnToSecondSpread(page);
       const box = await getMagazineBox(page);
       const leftEdge = box.x + 5;
       const bottomEdge = box.y + box.height - 5;
-      const targetX = box.x + box.width * 0.35;
-      const targetY = box.y + box.height * 0.65;
+      const targetX = box.x + box.width * 0.28;
+      const targetY = box.y + box.height * 0.78;
 
       await dragToPoint(page, leftEdge, bottomEdge, targetX, targetY);
-      await expect(page).toHaveScreenshot("double-mid-curl-bottom-left.png");
+      await expectFlipInProgress(page);
+      await expect(page.locator("#magazine")).toHaveScreenshot(
+        "double-mid-curl-bottom-left.png"
+      );
       await page.mouse.up();
     });
 
     test("double mid-curl top left corner", async ({ page }) => {
       await openDouble(page);
-      await turnForwardByDrag(page);
+      await turnToSecondSpread(page);
       const box = await getMagazineBox(page);
       const leftEdge = box.x + 5;
       const topEdge = box.y + 5;
@@ -127,7 +180,10 @@ function registerPlaywrightSuite() {
       const targetY = box.y + box.height * 0.35;
 
       await dragToPoint(page, leftEdge, topEdge, targetX, targetY);
-      await expect(page).toHaveScreenshot("double-mid-curl-top-left.png");
+      await expectFlipInProgress(page);
+      await expect(page.locator("#magazine")).toHaveScreenshot(
+        "double-mid-curl-top-left.png"
+      );
       await page.mouse.up();
     });
 
@@ -147,6 +203,7 @@ function registerPlaywrightSuite() {
       const targetY = box.y + box.height * 0.35;
 
       await dragToPoint(page, rightEdge, topEdge, targetX, targetY);
+      await expectFlipInProgress(page);
       await expect(page.locator("#magazine")).toHaveScreenshot(
         "single-mid-curl.png"
       );
