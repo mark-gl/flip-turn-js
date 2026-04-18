@@ -39,3 +39,5 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+tests/**/*-darwin.png
+tests/**/*-win32.png
