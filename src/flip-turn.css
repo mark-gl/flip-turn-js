@@ -1,6 +1,5 @@
 .flip-turn-viewport {
   position: relative;
-  overflow: hidden;
   touch-action: none;
   --flip-turn-page-background: #fff;
 }
@@ -34,6 +33,10 @@
 
 .flip-turn-static-single-page {
   display: none;
+}
+
+.flip-turn-viewport.flip-turn-single {
+  overflow: hidden;
 }
 
 .flip-turn-viewport.flip-turn-single .flip-turn-static-left-page,
