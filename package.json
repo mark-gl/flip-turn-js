@@ -4,10 +4,10 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --hot demo/serve.ts",
-    "start": "bun demo/serve.ts",
-    "turnjs-dev": "bun --hot demo/turnjs/serve.ts",
-    "turnjs-start": "bun demo/turnjs/serve.ts",
+    "dev": "bun --hot demo/index.html demo/single.html",
+    "start": "bun demo/index.html demo/single.html",
+    "turnjs-dev": "bun --hot demo/turnjs/index.html demo/turnjs/single.html",
+    "turnjs-start": "bun demo/turnjs/index.html demo/turnjs/single.html",
     "lint": "bunx tsc --noEmit && bunx eslint . && bunx prettier --check .",
     "test-e2e": "bunx playwright test tests/flip-turn.spec.ts",
     "update-reference-snapshots": "bunx playwright test tests/flip-turn.spec.ts --update-snapshots"
