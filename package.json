@@ -49,6 +49,7 @@
   "scripts": {
     "build": "bun ./scripts/build.ts",
     "build-gh-pages": "bun ./scripts/build-gh-pages.ts",
+    "build-typedoc": "typedoc --options typedoc.json",
     "dev": "bun --hot demo/demo.html",
     "start": "bun demo/demo.html",
     "lint": "bunx tsc --noEmit && bunx eslint . && bunx prettier --check .",
@@ -68,8 +69,9 @@
     "eslint": "^10.2.1",
     "globals": "^17.5.0",
     "prettier": "^3.8.3",
-    "typescript-eslint": "^8.58.2",
-    "typescript": "^6.0.3"
+    "typedoc": "^0.28.19",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.58.2"
   },
   "prettier": {
     "semi": true,

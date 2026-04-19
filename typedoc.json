@@ -1,0 +1,12 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./src/flip-turn.ts"],
+  "entryPointStrategy": "resolve",
+  "tsconfig": "./tsconfig.typedoc.json",
+  "out": "./docs/typedoc",
+  "githubPages": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "sort": ["source-order"]
+}

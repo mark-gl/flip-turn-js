@@ -25,10 +25,19 @@ import { bindInputEvents } from "./turn/input/binding";
 
 export type { FlipTurnApi };
 
+/**
+ * Optional configuration used while creating a `flip-turn` instance.
+ */
 export type CreateFlipTurnConfig = {
+  /**
+   * Optional custom renderer implementation to use instead of the default DOM renderer.
+   */
   renderer?: FlipTurnRenderer;
 };
 
+/**
+ * Creates a `flip-turn` controller bound to a viewport element.
+ */
 export function createFlipTurn(
   viewport: HTMLDivElement,
   config: CreateFlipTurnConfig = {}

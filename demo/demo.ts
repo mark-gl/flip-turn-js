@@ -6,14 +6,14 @@ if (!(root instanceof HTMLDivElement)) throw new Error("Missing #magazine");
 
 const flipTurn = createFlipTurn(root);
 
-const btnDouble = document.querySelector<HTMLButtonElement>("#button-double")!;
-const btnSingle = document.querySelector<HTMLButtonElement>("#button-single")!;
+const btnDouble = document.querySelector<HTMLButtonElement>("#button-double");
+const btnSingle = document.querySelector<HTMLButtonElement>("#button-single");
 
 function setDisplay(mode: DisplayMode) {
   flipTurn.display(mode);
-  btnDouble.classList.toggle("active", mode === "double");
-  btnSingle.classList.toggle("active", mode === "single");
+  btnDouble?.classList.toggle("active", mode === "double");
+  btnSingle?.classList.toggle("active", mode === "single");
 }
 
-btnDouble.addEventListener("click", () => setDisplay("double"));
-btnSingle.addEventListener("click", () => setDisplay("single"));
+btnDouble?.addEventListener("click", () => setDisplay("double"));
+btnSingle?.addEventListener("click", () => setDisplay("single"));
