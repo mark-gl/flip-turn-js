@@ -1,15 +1,5 @@
-# flip-turn-js
+# flip-turn.js
 
-To install dependencies:
+Modern, versatile library for creating interactive page flipping effects
 
-```bash
-bun install
-```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.3.12. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+![Page flipping demo loop](demo/loop.gif)

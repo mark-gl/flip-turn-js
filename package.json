@@ -54,7 +54,8 @@
     "changeset": "bunx changeset",
     "version": "bunx changeset version",
     "test-e2e": "bunx playwright test tests/flip-turn.spec.ts",
-    "update-reference-snapshots": "bunx playwright test tests/flip-turn.spec.ts --update-snapshots"
+    "update-reference-snapshots": "bunx playwright test tests/flip-turn.spec.ts --update-snapshots",
+    "generate-demo-gif": "bunx playwright test tests/demo-gif.spec.ts --project=chromium"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.0",

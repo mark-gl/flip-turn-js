@@ -2,6 +2,18 @@
   position: relative;
   touch-action: none;
   --flip-turn-page-background: #fff;
+  --flip-turn-focus-ring-width: 2px;
+  --flip-turn-focus-ring-offset: 2px;
+}
+
+.flip-turn-viewport:focus {
+  outline: none;
+}
+
+.flip-turn-viewport:focus-visible {
+  outline: var(--flip-turn-focus-ring-width) solid black;
+  outline-color: -webkit-focus-ring-color;
+  outline-offset: var(--flip-turn-focus-ring-offset);
 }
 
 .flip-turn-static-page,
