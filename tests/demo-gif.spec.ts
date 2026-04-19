@@ -11,11 +11,11 @@ const dragSteps = 36;
 const dragControlXRatio = 0.5;
 const dragControlYRatio = 0.1;
 const capturePadding = 80;
-const targetGifSizeBytes = 10 * 1024 * 1024;
-const renderScale = 0.7;
+const targetGifSizeBytes = 5 * 1024 * 1024;
+const renderScale = 0.5;
 const gifsicleSettings = {
   colors: 176,
-  lossy: 110,
+  lossy: 125,
 };
 
 type Point = { x: number; y: number };
@@ -307,7 +307,7 @@ function renderGifWithFfmpeg(
     execFileSync("gifsicle", ["--version"], { stdio: "ignore" });
   } catch {
     throw new Error(
-      `Generated GIF is ${(initialSize / 1024 / 1024).toFixed(2)}MB (above 10MB target). Install gifsicle for additional compression.`
+      `Generated GIF is ${(initialSize / 1024 / 1024).toFixed(2)}MB (above 5MB target). Install gifsicle for additional compression.`
     );
   }
 
@@ -333,7 +333,7 @@ function renderGifWithFfmpeg(
 
   const finalSize = statSync(outputGifPath).size;
   throw new Error(
-    `Unable to reduce GIF below 10MB (final size ${(finalSize / 1024 / 1024).toFixed(2)}MB)`
+    `Unable to reduce GIF below 5MB (final size ${(finalSize / 1024 / 1024).toFixed(2)}MB)`
   );
 }
 
