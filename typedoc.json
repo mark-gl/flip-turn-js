@@ -1,12 +1,20 @@
 {
   "$schema": "https://typedoc.org/schema.json",
+  "name": "flip-turn.js API reference",
   "entryPoints": ["./src/flip-turn.ts"],
   "entryPointStrategy": "resolve",
+  "readme": "none",
   "tsconfig": "./tsconfig.typedoc.json",
   "out": "./docs/typedoc",
   "githubPages": true,
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeInternal": true,
-  "sort": ["source-order"]
+  "sort": ["source-order"],
+  "hideGenerator": true,
+  "plugin": ["typedoc-github-theme"],
+  "navigationLinks": {
+    "Demo": "https://mark-gl.github.io/flip-turn-js/",
+    "View on GitHub": "https://github.com/mark-gl/flip-turn-js"
+  }
 }
