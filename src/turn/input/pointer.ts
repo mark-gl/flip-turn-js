@@ -142,8 +142,6 @@ export function bindPointerEvents(
       return;
     }
 
-    viewport.focus({ preventScroll: true });
-
     if (state.activeTurn && !state.activeTurn.isPreview) {
       if (state.activeTurn.phase === "committing") {
         stopActiveTurn(runtime, "pointer");
