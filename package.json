@@ -47,8 +47,8 @@
   ],
   "type": "module",
   "scripts": {
-    "build": "rm -rf dist && mkdir -p dist && bun build ./src/flip-turn.ts --outfile ./dist/flip-turn.js --format esm --target browser --minify && bun build ./src/flip-turn.ts --outfile ./dist/flip-turn.cjs --format cjs --target node --minify && bunx esbuild ./src/flip-turn.ts --bundle --format=iife --global-name=FlipTurn --outfile=./dist/flip-turn.iife.js --minify --platform=browser --target=es2020 && bunx dts-bundle-generator -o ./dist/flip-turn.d.ts --project ./tsconfig.types.json ./src/flip-turn.ts && cp ./src/flip-turn.css ./dist/flip-turn.css",
-    "build-gh-pages": "rm -rf docs && mkdir -p docs/assets && bun build ./demo/demo.ts --outfile ./docs/demo.js --target browser --minify && sed -e 's#../src/flip-turn.css#./flip-turn.css#' -e 's#./demo.ts#./demo.js#' ./demo/demo.html > ./docs/index.html && cp ./demo/demo.css ./docs/demo.css && cp ./src/flip-turn.css ./docs/flip-turn.css && cp ./demo/assets/*.jpg ./docs/assets/",
+    "build": "bun ./scripts/build.ts",
+    "build-gh-pages": "bun ./scripts/build-gh-pages.ts",
     "dev": "bun --hot demo/demo.html",
     "start": "bun demo/demo.html",
     "lint": "bunx tsc --noEmit && bunx eslint . && bunx prettier --check .",
