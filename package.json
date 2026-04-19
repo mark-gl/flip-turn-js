@@ -28,10 +28,13 @@
     "url": "https://github.com/mark-gl/flip-turn-js/issues"
   },
   "types": "./dist/flip-turn.d.ts",
+  "main": "./dist/flip-turn.cjs",
+  "module": "./dist/flip-turn.js",
   "exports": {
     ".": {
       "types": "./dist/flip-turn.d.ts",
       "import": "./dist/flip-turn.js",
+      "require": "./dist/flip-turn.cjs",
       "default": "./dist/flip-turn.js"
     },
     "./flip-turn.css": "./dist/flip-turn.css"
@@ -43,9 +46,8 @@
     "./dist/*.css"
   ],
   "type": "module",
-  "private": true,
   "scripts": {
-    "build": "rm -rf dist && bun build ./src/flip-turn.ts --outfile ./dist/flip-turn.js --format esm --target browser --minify && bunx dts-bundle-generator -o ./dist/flip-turn.d.ts --project ./tsconfig.types.json ./src/flip-turn.ts && cp ./src/flip-turn.css ./dist/flip-turn.css",
+    "build": "rm -rf dist && mkdir -p dist && bun build ./src/flip-turn.ts --outfile ./dist/flip-turn.js --format esm --target browser --minify && bun build ./src/flip-turn.ts --outfile ./dist/flip-turn.cjs --format cjs --target node --minify && bunx esbuild ./src/flip-turn.ts --bundle --format=iife --global-name=FlipTurn --outfile=./dist/flip-turn.iife.js --minify --platform=browser --target=es2020 && bunx dts-bundle-generator -o ./dist/flip-turn.d.ts --project ./tsconfig.types.json ./src/flip-turn.ts && cp ./src/flip-turn.css ./dist/flip-turn.css",
     "dev": "bun --hot demo/demo.html",
     "start": "bun demo/demo.html",
     "lint": "bunx tsc --noEmit && bunx eslint . && bunx prettier --check .",
