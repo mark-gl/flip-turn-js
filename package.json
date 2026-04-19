@@ -1,5 +1,32 @@
 {
-  "name": "flip-turn-js",
+  "name": "flip-turn",
+  "version": "0.0.0",
+  "description": "Modern, versatile library for creating interactive page flipping effects",
+  "author": "mark-gl",
+  "license": "MIT",
+  "keywords": [
+    "animation",
+    "book",
+    "flip",
+    "flipbook",
+    "fold",
+    "javascript",
+    "page",
+    "page-flip",
+    "page-turn",
+    "reader",
+    "turn",
+    "turnjs",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mark-gl/flip-turn-js.git"
+  },
+  "homepage": "https://github.com/mark-gl/flip-turn-js",
+  "bugs": {
+    "url": "https://github.com/mark-gl/flip-turn-js/issues"
+  },
   "types": "./dist/flip-turn.d.ts",
   "exports": {
     ".": {
@@ -31,13 +58,11 @@
     "@types/bun": "^1.3.12",
     "@types/node": "^25.6.0",
     "dts-bundle-generator": "^9.5.1",
-    "eslint": "^10.2.0",
+    "eslint": "^10.2.1",
     "globals": "^17.5.0",
-    "prettier": "^3.8.2",
-    "typescript-eslint": "^8.58.2"
-  },
-  "peerDependencies": {
-    "typescript": "^6.0.2"
+    "prettier": "^3.8.3",
+    "typescript-eslint": "^8.58.2",
+    "typescript": "^6.0.3"
   },
   "prettier": {
     "semi": true,
