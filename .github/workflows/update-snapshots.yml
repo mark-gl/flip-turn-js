@@ -19,7 +19,7 @@ jobs:
       - name: Install Playwright Browsers
         run: bunx playwright install --with-deps
       - name: Update snapshots
-        run: bunx playwright test --update-snapshots
+        run: bun run update-reference-snapshots
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:3000
       - name: Commit updated snapshots
