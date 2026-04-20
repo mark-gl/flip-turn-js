@@ -57,6 +57,7 @@ async function openDouble(page: Page) {
     content: `
       html {
         background: transparent;
+        overflow: hidden;
       }
 
       body {
@@ -64,6 +65,15 @@ async function openDouble(page: Page) {
         padding: 0;
         background: transparent;
         display: block;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .page-toolbar,
+      .demo-main {
+        display: block;
+        margin: 0;
+        padding: 0;
         min-height: 0;
       }
 
@@ -73,6 +83,21 @@ async function openDouble(page: Page) {
 
       #magazine {
         margin: ${capturePadding}px;
+        width: 1152px !important;
+        height: 752px !important;
+        max-width: none !important;
+        aspect-ratio: auto !important;
+      }
+
+      #magazine.flip-turn-single {
+        width: 576px !important;
+        height: 752px !important;
+        aspect-ratio: auto !important;
+      }
+
+      #magazine .flip-turn-viewport {
+        width: 100% !important;
+        height: 100% !important;
       }
 
       #magazine:focus,
