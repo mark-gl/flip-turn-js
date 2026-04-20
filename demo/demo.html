@@ -2,23 +2,37 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>flip-turn-js</title>
     <link rel="stylesheet" href="../src/flip-turn.css" />
     <link rel="stylesheet" href="./demo.css" />
   </head>
   <body>
-    <div class="settings">
-      <button id="button-double" class="active">Double page</button>
-      <button id="button-single">Single page</button>
-    </div>
-    <div id="magazine" data-display="double">
-      <img src="./assets/01.jpg" alt="Demo page 1" />
-      <img src="./assets/02.jpg" alt="Demo page 2" />
-      <img src="./assets/03.jpg" alt="Demo page 3" />
-      <img src="./assets/04.jpg" alt="Demo page 4" />
-      <img src="./assets/05.jpg" alt="Demo page 5" />
-      <img src="./assets/06.jpg" alt="Demo page 6" />
-    </div>
+    <header class="page-toolbar">
+      <div class="toolbar-contents container">
+        <a href="./demo.html" class="title">flip-turn.js demo</a>
+        <div id="toolbar-links">
+          <a href="https://mark-gl.github.io/flip-turn-js/typedoc"
+            >API reference</a
+          >
+          <a href="https://github.com/mark-gl/flip-turn-js">View on GitHub</a>
+        </div>
+      </div>
+    </header>
+    <main class="demo-main">
+      <div class="settings">
+        <button id="button-double" class="active">Double page</button>
+        <button id="button-single">Single page</button>
+      </div>
+      <div id="magazine" data-display="double">
+        <img src="./assets/01.jpg" alt="Demo page 1" />
+        <img src="./assets/02.jpg" alt="Demo page 2" />
+        <img src="./assets/03.jpg" alt="Demo page 3" />
+        <img src="./assets/04.jpg" alt="Demo page 4" />
+        <img src="./assets/05.jpg" alt="Demo page 5" />
+        <img src="./assets/06.jpg" alt="Demo page 6" />
+      </div>
+    </main>
     <script type="module" src="./demo.ts"></script>
   </body>
 </html>
