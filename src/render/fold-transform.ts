@@ -1,11 +1,7 @@
 import { diagonalLength, point } from "../core/math";
-import type {
-  ActiveTurn,
-  Corner,
-  FlipTurnState,
-  FoldGeometry,
-  Point,
-} from "../core/types";
+import type { Corner, Point } from "../types/primitives";
+import type { FoldGeometry } from "../types/renderer";
+import type { ActiveTurn, FlipTurnState } from "../types/state";
 import { rotate, setTransform, translate } from "../dom/css-transforms";
 import { computeFoldGeometry } from "../layout/fold";
 import { cornerPoint } from "../layout/spread";

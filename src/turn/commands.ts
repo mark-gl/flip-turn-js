@@ -1,12 +1,9 @@
 import { emitLifecycle, emitViewEntryBoundaryEvents } from "../core/events";
 import { constrainCornerSize } from "../core/math";
 import { clearActiveTurnState } from "../core/state";
-import type {
-  Corner,
-  FlipTurnEventCause,
-  TurnDirection,
-  ViewportBox,
-} from "../core/types";
+import type { FlipTurnEventCause } from "../types/lifecycle";
+import type { Corner, TurnDirection } from "../types/primitives";
+import type { ViewportBox } from "../types/renderer";
 import { viewportBoxFromDomRect } from "../dom/dom";
 import {
   canTurnDirection,
@@ -22,7 +19,7 @@ import {
   turnPositionForPublicPage,
 } from "../layout/spread";
 import { render } from "../render/render";
-import type { FlipTurnRuntime } from "../runtime/runtime";
+import type { FlipTurnRuntime } from "../types/renderer";
 import { animateHoverPreview, stopAnimation } from "./animation";
 import {
   createProgrammaticTurnStartOptions,

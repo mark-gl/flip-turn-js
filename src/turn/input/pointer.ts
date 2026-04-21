@@ -1,8 +1,8 @@
-import type { Corner, ViewportBox } from "../../core/types";
+import type { Corner } from "../../types/primitives";
+import type { FlipTurnRuntime, ViewportBox } from "../../types/renderer";
 import { viewportBoxFromDomRect } from "../../dom/dom";
 import { directionFromCorner } from "../../layout/spread";
 import { render } from "../../render/render";
-import type { FlipTurnRuntime } from "../../runtime/runtime";
 import { animateHoverPreview, stopAnimation } from "../animation";
 import {
   canRequestTurnDirection,

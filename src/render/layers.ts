@@ -1,5 +1,5 @@
 import { diagonalLength } from "../core/math";
-import type { FlipTurnState } from "../core/types";
+import type { FlipTurnState } from "../types/state";
 import { setTransform } from "../dom/css-transforms";
 import type { FlipTurnDom } from "../dom/dom";
 import { markInternalNode } from "../dom/dom";

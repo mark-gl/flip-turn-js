@@ -1,5 +1,5 @@
 import { PI, distanceBetweenPoints, magnitude, point } from "../core/math";
-import type { Point } from "../core/types";
+import type { Point } from "../types/primitives";
 
 export type GradientStop = {
   percent: number;

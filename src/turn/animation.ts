@@ -1,8 +1,9 @@
 import { bezier, point } from "../core/math";
-import type { FlipTurnState, Point } from "../core/types";
+import type { Point } from "../types/primitives";
+import type { FlipTurnState } from "../types/state";
 import { cornerPoint, farCornerPoint, isTopCorner } from "../layout/spread";
 import { render } from "../render/render";
-import type { FlipTurnRuntime } from "../runtime/runtime";
+import type { FlipTurnRuntime } from "../types/renderer";
 import { syncActiveTurnProgress } from "./geometry";
 
 export function stopAnimation(state: FlipTurnState) {

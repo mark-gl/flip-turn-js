@@ -1,4 +1,5 @@
-import type { PageSourceInput, ViewportBox } from "../core/types";
+import type { PageSourceInput } from "../types/options";
+import type { ViewportBox } from "../types/renderer";
 
 export type FlipTurnDom = {
   viewport: HTMLDivElement;

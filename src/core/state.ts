@@ -1,13 +1,15 @@
 import { defaultOptions, resolveOptions } from "./options";
 import type {
-  ActiveTurn,
-  ActiveTurnResolvedOptions,
-  DisplayMode,
   FlipTurnEventListener,
   FlipTurnLifecycleEvent,
+} from "../types/lifecycle";
+import type { DisplayMode } from "../types/primitives";
+import type {
+  ActiveTurn,
+  ActiveTurnResolvedOptions,
   FlipTurnState,
   PageSource,
-} from "./types";
+} from "../types/state";
 
 const LIFECYCLE_EVENTS: FlipTurnLifecycleEvent[] = [
   "start",

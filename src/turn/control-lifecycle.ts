@@ -1,11 +1,5 @@
 import { emitLifecycle, emitViewEntryBoundaryEvents } from "../core/events";
 import { clearActiveTurnState } from "../core/state";
-import type {
-  Corner,
-  FlipTurnEventCause,
-  TurnDirection,
-  ViewportBox,
-} from "../core/types";
 import { viewportBoxFromDomRect } from "../dom/dom";
 import {
   canTurnDirection,
@@ -18,7 +12,9 @@ import {
 } from "../layout/spread";
 import { commitTurn } from "../layout/turn-plan";
 import { render } from "../render/render";
-import type { FlipTurnRuntime, PointerLike } from "../runtime/runtime";
+import type { FlipTurnEventCause } from "../types/lifecycle";
+import type { Corner, TurnDirection } from "../types/primitives";
+import type { FlipTurnRuntime, ViewportBox } from "../types/renderer";
 import { animateTurnCommit, animateTurnRestore } from "./animation";
 import {
   cornerForDirection,
@@ -33,7 +29,13 @@ const TURN_COMMIT_THRESHOLD = 0.5;
 const KEYBOARD_CATCHUP_ACCELERATION_STEP = 2;
 const KEYBOARD_CATCHUP_ACCELERATION_MAX = 10;
 
-export type ProgrammaticTurnStartOptions = {
+type PointerLike = {
+  clientX: number;
+  clientY: number;
+  pointerId: number;
+};
+
+type ProgrammaticTurnStartOptions = {
   cause: FlipTurnEventCause;
   elevation: number;
   pointerId: number;

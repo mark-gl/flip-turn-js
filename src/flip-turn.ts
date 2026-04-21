@@ -1,5 +1,6 @@
 import type { FlipTurnApi } from "./api";
 import { createFlipTurnApi } from "./api";
+import { applyResolvedOptions } from "./core/apply-options";
 import { subscribeLifecycleEvent } from "./core/events";
 import {
   cloneApiBoundaryOptions,
@@ -7,7 +8,6 @@ import {
   resolveOptions,
 } from "./core/options";
 import { createState } from "./core/state";
-import type { FlipTurnOptions } from "./core/types";
 import {
   initTransformSupport,
   setTransform,
@@ -17,11 +17,17 @@ import { optionsFromDataAttributes } from "./dom/data-options";
 import { domChildPageSources, viewportBoxFromDomRect } from "./dom/dom";
 import { createDomRenderer } from "./render/dom-renderer";
 import { render } from "./render/render";
-import { applyResolvedOptions } from "./runtime/apply-options";
-import type { FlipTurnRenderer, FlipTurnRuntime } from "./runtime/runtime";
 import { stopAnimation } from "./turn/animation";
 import { stopActiveTurn } from "./turn/commands";
 import { bindInputEvents } from "./turn/input/binding";
+import type { FlipTurnOptions } from "./types/options";
+import type { FlipTurnRenderer, FlipTurnRuntime } from "./types/renderer";
+
+export * as Lifecycle from "./types/lifecycle";
+export * as Options from "./types/options";
+export * as Primitives from "./types/primitives";
+export * as Renderer from "./types/renderer";
+export * as State from "./types/state";
 
 export type { FlipTurnApi };
 

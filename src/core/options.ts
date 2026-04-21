@@ -4,14 +4,14 @@ import {
   finiteNonNegative,
 } from "./math";
 import type {
-  Corner,
   CornerMode,
   FlipTurnOptions,
-  PageSource,
   PageSourceInput,
   PageTurnOptionMap,
   ResolvedFlipTurnOptions,
-} from "./types";
+} from "../types/options";
+import type { Corner } from "../types/primitives";
+import type { PageSource } from "../types/state";
 
 const SUPPORTED_CORNERS: Corner[] = ["tl", "tr", "bl", "br"];
 

@@ -1,4 +1,4 @@
-import type { FlipTurnRuntime } from "../../runtime/runtime";
+import type { FlipTurnRuntime } from "../../types/renderer";
 import { requestTurn } from "../commands";
 import { bindPointerEvents } from "./pointer";
 

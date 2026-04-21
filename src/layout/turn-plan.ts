@@ -1,4 +1,5 @@
-import type { FlipTurnState, TurnDirection } from "../core/types";
+import type { TurnDirection } from "../types/primitives";
+import type { FlipTurnState } from "../types/state";
 import {
   directionStep,
   hasPages,

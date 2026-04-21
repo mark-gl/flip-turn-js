@@ -6,7 +6,8 @@ import {
   magnitude,
   point,
 } from "../core/math";
-import type { Corner, FoldGeometry, Point } from "../core/types";
+import type { Corner, Point } from "../types/primitives";
+import type { FoldGeometry } from "../types/renderer";
 import {
   cornerPoint,
   farCornerPoint,

@@ -1,13 +1,13 @@
-import { emitViewEntryBoundaryEvents } from "../core/events";
-import { cloneResolvedOptionsSnapshot } from "../core/options";
-import type { ResolvedFlipTurnOptions } from "../core/types";
 import {
   currentPublicPageNumber,
   setCurrentFromPublicPage,
 } from "../layout/spread";
 import { updatePageSourcesState } from "../render/page-lifecycle";
 import { render } from "../render/render";
-import type { FlipTurnRuntime } from "./runtime";
+import { emitViewEntryBoundaryEvents } from "./events";
+import { cloneResolvedOptionsSnapshot } from "./options";
+import type { ResolvedFlipTurnOptions } from "../types/options";
+import type { FlipTurnRuntime } from "../types/renderer";
 
 export function applyResolvedOptions(
   runtime: FlipTurnRuntime,

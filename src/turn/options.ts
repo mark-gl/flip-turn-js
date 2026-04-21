@@ -1,13 +1,11 @@
 import { finiteAtLeastOne, finiteNonNegative } from "../core/math";
 import { resolveCornerSelection } from "../core/options";
 import type {
-  ActiveTurnResolvedOptions,
-  Corner,
-  FlipTurnState,
   PageTurnGradientOptions,
   PageTurnOptions,
-  TurnDirection,
-} from "../core/types";
+} from "../types/options";
+import type { Corner, TurnDirection } from "../types/primitives";
+import type { ActiveTurnResolvedOptions, FlipTurnState } from "../types/state";
 import {
   isSingleDisplayMode,
   pageSourceAtPublicPageNumber,

@@ -1,20 +1,23 @@
 import { subscribeLifecycleEvent } from "./core/events";
 import { cloneResolvedOptionsSnapshot } from "./core/options";
 import type {
-  DisplayMode,
+  EventSubscription,
   FlipTurnEventListener,
   FlipTurnLifecycleEvent,
+} from "./types/lifecycle";
+import type {
   FlipTurnOptions,
-  FlipTurnState,
   PageSourceInput,
   ResolvedFlipTurnOptions,
-} from "./core/types";
+} from "./types/options";
+import type { DisplayMode } from "./types/primitives";
+import type { FlipTurnRuntime } from "./types/renderer";
+import type { FlipTurnState } from "./types/state";
 import {
   currentPublicPageNumber,
   normalizePageIndex,
   normalizePublicPageNumber,
 } from "./layout/spread";
-import type { EventSubscription, FlipTurnRuntime } from "./runtime/runtime";
 import { isAnimating, stopAnimation } from "./turn/animation";
 import { requestPageSet, requestTurn, stopActiveTurn } from "./turn/commands";
 

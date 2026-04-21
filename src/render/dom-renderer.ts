@@ -1,6 +1,6 @@
-import type { ResolvedFlipTurnOptions } from "../core/types";
+import type { ResolvedFlipTurnOptions } from "../types/options";
+import type { FlipTurnRenderer } from "../types/renderer";
 import { bootstrapDomBindings } from "../dom/dom";
-import type { FlipTurnRenderer } from "../runtime/runtime";
 import type { DomRenderState } from "./page-lifecycle";
 import {
   clearPageFace,

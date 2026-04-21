@@ -2,12 +2,11 @@ import { clamp, point } from "../core/math";
 import type {
   Corner,
   DisplayMode,
-  FlipTurnState,
-  PageSource,
   Point,
   TurnDirection,
-  ViewportBox,
-} from "../core/types";
+} from "../types/primitives";
+import type { ViewportBox } from "../types/renderer";
+import type { FlipTurnState, PageSource } from "../types/state";
 
 const FIRST_PAGE_NUMBER = 1;
 const FIRST_SPREAD_INDEX = 0;

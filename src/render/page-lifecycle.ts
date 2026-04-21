@@ -1,9 +1,6 @@
 import { pageListFromOptions } from "../core/options";
-import type {
-  FlipTurnState,
-  PageSource,
-  ResolvedFlipTurnOptions,
-} from "../core/types";
+import type { ResolvedFlipTurnOptions } from "../types/options";
+import type { FlipTurnState, PageSource } from "../types/state";
 import type { FlipTurnDom } from "../dom/dom";
 import { resolveDomBindings } from "../dom/dom";
 import {

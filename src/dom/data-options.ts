@@ -1,5 +1,5 @@
 import { defaultOptions } from "../core/options";
-import type { FlipTurnOptions } from "../core/types";
+import type { FlipTurnOptions } from "../types/options";
 
 function parseBooleanWithFallback(
   value: string | undefined,

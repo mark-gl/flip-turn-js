@@ -1,4 +1,4 @@
-import type { DisplayMode } from "../src/core/types";
+import type { DisplayMode } from "../src/types/primitives";
 import { createFlipTurn } from "../src/flip-turn";
 
 const rootElement = document.querySelector<HTMLDivElement>("#magazine");

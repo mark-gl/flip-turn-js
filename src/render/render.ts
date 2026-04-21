@@ -1,4 +1,5 @@
-import type { FlipTurnState } from "../core/types";
+import type { FlipTurnRuntime, RenderPrimitives } from "../types/renderer";
+import type { FlipTurnState } from "../types/state";
 import { computeFoldGeometry } from "../layout/fold";
 import {
   isSingleDisplayMode,
@@ -6,7 +7,6 @@ import {
   virtualPageWindowRange,
 } from "../layout/spread";
 import { buildTurnRenderPlan } from "../layout/turn-plan";
-import type { FlipTurnRuntime, RenderPrimitives } from "../runtime/runtime";
 import {
   resolvedBackPageSource,
   shouldRenderBackGradient,

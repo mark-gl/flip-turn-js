@@ -11,9 +11,9 @@ import type {
   FlipTurnEventListener,
   FlipTurnEventPayload,
   FlipTurnLifecycleEvent,
-  FlipTurnState,
-  TurnDirection,
-} from "./types";
+} from "../types/lifecycle";
+import type { TurnDirection } from "../types/primitives";
+import type { FlipTurnState } from "../types/state";
 
 function immutablePayload(payload: FlipTurnEventPayload): FlipTurnEventPayload {
   const frozenView = [...payload.view];

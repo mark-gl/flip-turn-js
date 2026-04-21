@@ -3,11 +3,11 @@ import { pageOffsetXForSide } from "../core/state";
 import type {
   Corner,
   DisplayMode,
-  FlipTurnState,
   Point,
   TurnDirection,
-  ViewportBox,
-} from "../core/types";
+} from "../types/primitives";
+import type { ViewportBox } from "../types/renderer";
+import type { FlipTurnState } from "../types/state";
 import {
   cornerPoint,
   directionFromCorner,
