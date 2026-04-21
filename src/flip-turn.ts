@@ -36,6 +36,12 @@ export type { FlipTurnApi };
  */
 export type CreateFlipTurnConfig = {
   /**
+   * Options to apply during initialization.
+   *
+   * These will take precedence over any options specified via data-* attributes.
+   */
+  options?: Partial<FlipTurnOptions>;
+  /**
    * Optional custom renderer implementation to use instead of the default DOM renderer.
    */
   renderer?: FlipTurnRenderer;
@@ -49,10 +55,11 @@ export function createFlipTurn(
   config: CreateFlipTurnConfig = {}
 ): FlipTurnApi {
   const rootElement = viewport;
+  const { renderer: configuredRenderer, options: initialOptions = {} } = config;
 
   const runtime: FlipTurnRuntime = {
     state: createState(),
-    renderer: config.renderer ?? createDomRenderer(),
+    renderer: configuredRenderer ?? createDomRenderer(),
     viewport: rootElement,
   };
 
@@ -199,6 +206,8 @@ export function createFlipTurn(
       ...detachedOptions,
     });
 
+    pageNavigationMode = resolvedOptions.pageNavigationMode;
+
     if (!initialized) {
       initialized = true;
       runtime.renderer.init?.(runtime);
@@ -219,7 +228,7 @@ export function createFlipTurn(
     return api;
   };
 
-  init();
+  init(initialOptions);
   return api;
 }
 
