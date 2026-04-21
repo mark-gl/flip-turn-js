@@ -72,7 +72,7 @@ export function hasPages(pageCount: number): boolean {
   return pageCount > 0;
 }
 
-export function hasMultiplePages(pageCount: number): boolean {
+function hasMultiplePages(pageCount: number): boolean {
   return pageCount > FIRST_PAGE_NUMBER;
 }
 
@@ -80,7 +80,7 @@ export function directionStep(direction: TurnDirection): 1 | -1 {
   return direction === "forward" ? 1 : -1;
 }
 
-export function isValidPageIndex(
+function isValidPageIndex(
   state: FlipTurnState,
   pageIndex: number | null
 ): boolean {
@@ -239,7 +239,7 @@ export function spreadPageIndicesAt(
   return { left: leftIndex, right: rightIndex };
 }
 
-export function canTurnForward(state: FlipTurnState): boolean {
+function canTurnForward(state: FlipTurnState): boolean {
   if (!hasMultiplePages(state.pageCount)) {
     return false;
   }
@@ -251,7 +251,7 @@ export function canTurnForward(state: FlipTurnState): boolean {
   return state.currentSpreadIndex < maxSpreadIndex(state);
 }
 
-export function canTurnBackward(state: FlipTurnState): boolean {
+function canTurnBackward(state: FlipTurnState): boolean {
   if (!hasMultiplePages(state.pageCount)) {
     return false;
   }

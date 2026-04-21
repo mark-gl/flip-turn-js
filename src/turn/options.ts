@@ -1,16 +1,16 @@
 import { finiteAtLeastOne, finiteNonNegative } from "../core/math";
 import { resolveCornerSelection } from "../core/options";
+import {
+  isSingleDisplayMode,
+  pageSourceAtPublicPageNumber,
+} from "../layout/spread";
+import { defaultBackPageIndex, turningPageIndex } from "../layout/turn-plan";
 import type {
   PageTurnGradientOptions,
   PageTurnOptions,
 } from "../types/options";
 import type { Corner, TurnDirection } from "../types/primitives";
 import type { ActiveTurnResolvedOptions, FlipTurnState } from "../types/state";
-import {
-  isSingleDisplayMode,
-  pageSourceAtPublicPageNumber,
-} from "../layout/spread";
-import { defaultBackPageIndex, turningPageIndex } from "../layout/turn-plan";
 
 type ResolvedGradientOptions = { front: boolean; back: boolean };
 
@@ -28,7 +28,7 @@ function pageOverridesForDirection(
   return pageScoped;
 }
 
-export function resolveGradientOptions(
+function resolveGradientOptions(
   state: FlipTurnState,
   override: boolean | PageTurnGradientOptions | undefined
 ): ResolvedGradientOptions {

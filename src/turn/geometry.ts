@@ -1,13 +1,5 @@
 import { clamp, constrainCornerSize, point } from "../core/math";
 import { pageOffsetXForSide } from "../core/state";
-import type {
-  Corner,
-  DisplayMode,
-  Point,
-  TurnDirection,
-} from "../types/primitives";
-import type { ViewportBox } from "../types/renderer";
-import type { FlipTurnState } from "../types/state";
 import {
   cornerPoint,
   directionFromCorner,
@@ -16,6 +8,14 @@ import {
   sideForClientX,
   sideForCorner,
 } from "../layout/spread";
+import type {
+  Corner,
+  DisplayMode,
+  Point,
+  TurnDirection,
+} from "../types/primitives";
+import type { ViewportBox } from "../types/renderer";
+import type { FlipTurnState } from "../types/state";
 import { isCornerAllowedForDirection, resolveTurnOptions } from "./options";
 
 function pageOffsetFor(
@@ -74,7 +74,7 @@ function localPagePointFromClient(
   );
 }
 
-export function clientPointFromLocal(
+function clientPointFromLocal(
   localX: number,
   localY: number,
   box: ViewportBox,
@@ -85,7 +85,7 @@ export function clientPointFromLocal(
   return point(box.left + pageOffsetX + localX, box.top + localY);
 }
 
-export function progressFromTurnPoint(
+function progressFromTurnPoint(
   pointX: number,
   pageWidth: number,
   side: "left" | "right"

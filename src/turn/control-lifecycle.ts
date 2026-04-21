@@ -198,7 +198,7 @@ export function isActivePointer(
   );
 }
 
-export function createProgrammaticPointer(
+function createProgrammaticPointer(
   runtime: FlipTurnRuntime,
   direction: TurnDirection,
   box: ViewportBox,

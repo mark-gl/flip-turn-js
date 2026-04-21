@@ -7,7 +7,7 @@ import {
   spreadPageIndicesAt,
 } from "./spread";
 
-export type TurnRenderPlan = {
+type TurnRenderPlan = {
   baseLeftPage: number | null;
   baseRightPage: number | null;
   baseSinglePage: number | null;
@@ -108,10 +108,7 @@ export function commitTurn(state: FlipTurnState, direction: TurnDirection) {
   );
 }
 
-export function buildDoubleTurnPages(
-  state: FlipTurnState,
-  direction: TurnDirection
-) {
+function buildDoubleTurnPages(state: FlipTurnState, direction: TurnDirection) {
   const current = spreadPageIndicesAt(state, state.currentSpreadIndex);
   const destination = spreadForDirection(state, direction);
 
@@ -134,10 +131,7 @@ export function buildDoubleTurnPages(
   };
 }
 
-export function buildSingleTurnPages(
-  state: FlipTurnState,
-  direction: TurnDirection
-) {
+function buildSingleTurnPages(state: FlipTurnState, direction: TurnDirection) {
   const destinationIndex = destinationIndexForDirection(state, direction);
   return {
     basePage: destinationIndex,

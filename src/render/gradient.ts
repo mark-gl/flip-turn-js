@@ -1,17 +1,17 @@
 import { PI, distanceBetweenPoints, magnitude, point } from "../core/math";
 import type { Point } from "../types/primitives";
 
-export type GradientStop = {
+type GradientStop = {
   percent: number;
   color: string;
 };
 
-export type LinearGradientDescriptor = {
+type LinearGradientDescriptor = {
   angleRadians: number;
   stops: GradientStop[];
 };
 
-export function computeLinearGradientDescriptor(
+function computeLinearGradientDescriptor(
   box: { width: number; height: number },
   pointStart: Point,
   pointEnd: Point,
@@ -66,9 +66,7 @@ export function computeLinearGradientDescriptor(
   };
 }
 
-export function linearGradientCss(
-  descriptor: LinearGradientDescriptor
-): string {
+function linearGradientCss(descriptor: LinearGradientDescriptor): string {
   const colorStops = descriptor.stops
     .map((stop) => `${stop.color} ${stop.percent}%`)
     .join(",");

@@ -1,9 +1,9 @@
 import { bezier, point } from "../core/math";
-import type { Point } from "../types/primitives";
-import type { FlipTurnState } from "../types/state";
 import { cornerPoint, farCornerPoint, isTopCorner } from "../layout/spread";
 import { render } from "../render/render";
+import type { Point } from "../types/primitives";
 import type { FlipTurnRuntime } from "../types/renderer";
+import type { FlipTurnState } from "../types/state";
 import { syncActiveTurnProgress } from "./geometry";
 
 export function stopAnimation(state: FlipTurnState) {
@@ -34,7 +34,7 @@ function easeOutCircular(
   return delta * Math.sqrt(1 - normalized * normalized) + startValue;
 }
 
-export function animateScalar(
+function animateScalar(
   runtime: FlipTurnRuntime,
   from: number,
   to: number,

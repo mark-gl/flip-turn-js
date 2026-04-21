@@ -76,7 +76,7 @@ export function point(x: number, y: number): Point {
   return { x, y };
 }
 
-export function square(value: number): number {
+function square(value: number): number {
   return value * value;
 }
 
