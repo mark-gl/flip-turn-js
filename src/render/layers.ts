@@ -1,14 +1,15 @@
 import { diagonalLength } from "../core/math";
-import type { FlipTurnState } from "../types/state";
 import { setTransform } from "../dom/css-transforms";
 import type { FlipTurnDom } from "../dom/dom";
 import { markInternalNode } from "../dom/dom";
 import { isDoubleDisplayMode } from "../layout/spread";
+import type { FlipTurnState } from "../types/state";
 
 export type ActiveLayers = {
   frontWrapper: HTMLDivElement;
   frontRotator: HTMLDivElement;
   frontPage: HTMLDivElement;
+  hardEdge: HTMLDivElement;
   foldWrapper: HTMLDivElement;
   foldRotator: HTMLDivElement;
   foldPage: HTMLDivElement;
@@ -30,9 +31,10 @@ export function setupActiveLayers(dom: FlipTurnDom): ActiveLayers {
   const frontPage = createLayerDiv(
     "flip-turn-active-front-page flip-turn-page"
   );
+  const hardEdge = createLayerDiv("flip-turn-active-hard-edge");
 
   frontRotator.append(frontPage);
-  frontWrapper.append(frontRotator);
+  frontWrapper.append(frontRotator, hardEdge);
 
   const foldWrapper = createLayerDiv("flip-turn-active-fold-layer");
   const foldRotator = createLayerDiv("flip-turn-active-fold-rotator");
@@ -53,6 +55,7 @@ export function setupActiveLayers(dom: FlipTurnDom): ActiveLayers {
     frontWrapper,
     frontRotator,
     frontPage,
+    hardEdge,
     foldWrapper,
     foldRotator,
     foldPage,
@@ -99,25 +102,41 @@ export function updateActiveLayerOrder(
   const normalizedProgress = Math.max(0, Math.min(1, progress));
   const movingInFront = normalizedProgress < LAYER_ORDER_SWITCH_PROGRESS;
 
+  const sideZIndexes = zIndexBySide[side];
+  const expectedFrontZIndex = movingInFront
+    ? sideZIndexes.frontWhenMovingInFront
+    : sideZIndexes.frontWhenMovingBehind;
+  const expectedBackZIndex = movingInFront
+    ? sideZIndexes.backWhenMovingInFront
+    : sideZIndexes.backWhenMovingBehind;
+
   const cached = layerOrderCacheByLayers.get(layers);
-  if (cached?.side === side && cached?.movingInFront === movingInFront) {
+  const hasExpectedStyleState =
+    layers.frontWrapper.style.getPropertyValue("z-index") ===
+      expectedFrontZIndex &&
+    layers.foldWrapper.style.getPropertyValue("z-index") ===
+      Z_INDEX_FOLD_WRAPPER &&
+    layers.backShadow.style.getPropertyValue("z-index") ===
+      expectedBackZIndex;
+
+  if (
+    cached?.side === side &&
+    cached?.movingInFront === movingInFront &&
+    hasExpectedStyleState
+  ) {
     return;
   }
+
   layerOrderCacheByLayers.set(layers, { side, movingInFront });
 
-  const sideZIndexes = zIndexBySide[side];
   layers.frontWrapper.style.setProperty(
     "z-index",
-    movingInFront
-      ? sideZIndexes.frontWhenMovingInFront
-      : sideZIndexes.frontWhenMovingBehind
+    expectedFrontZIndex
   );
   layers.foldWrapper.style.setProperty("z-index", Z_INDEX_FOLD_WRAPPER);
   layers.backShadow.style.setProperty(
     "z-index",
-    movingInFront
-      ? sideZIndexes.backWhenMovingInFront
-      : sideZIndexes.backWhenMovingBehind
+    expectedBackZIndex
   );
 }
 
@@ -144,6 +163,35 @@ export function positionActiveLayers(
 ) {
   const leftOffset =
     side === "right" && isDoubleDisplayMode(state) ? pageWidth : 0;
+  const activeTurnUsesHardPage = state.activeTurnResolvedOptions?.hard === true;
+
+  if (activeTurnUsesHardPage) {
+    setStyles(layers.frontWrapper, {
+      ...pxPosition(leftOffset),
+      ...pxSize(pageWidth, pageHeight),
+    });
+
+    setStyles(layers.frontRotator, pxSize(pageWidth, pageHeight));
+    setStyles(layers.frontPage, pxSize(pageWidth, pageHeight));
+    setStyles(layers.hardEdge, pxSize(0, pageHeight));
+
+    setStyles(layers.foldWrapper, {
+      ...pxPosition(leftOffset),
+      ...pxSize(pageWidth, pageHeight),
+    });
+    setStyles(layers.foldRotator, pxSize(pageWidth, pageHeight));
+    setStyles(layers.foldPage, pxSize(pageWidth, pageHeight));
+    setStyles(layers.foldContent, pxSize(pageWidth, pageHeight));
+
+    setStyles(layers.frontShadow, pxSize(pageWidth, pageHeight));
+    setStyles(layers.backShadow, {
+      ...pxSize(pageWidth, pageHeight),
+      ...pxPosition(leftOffset),
+    });
+
+    return;
+  }
+
   const diagonalSize = diagonalLength(pageWidth, pageHeight);
 
   setStyles(layers.frontWrapper, {
@@ -152,6 +200,7 @@ export function positionActiveLayers(
   });
 
   setStyles(layers.frontPage, pxSize(pageWidth, pageHeight));
+  setStyles(layers.hardEdge, pxSize(0, pageHeight));
   setStyles(layers.frontRotator, pxSize(diagonalSize, diagonalSize));
   setStyles(layers.foldWrapper, {
     ...pxSize(diagonalSize, diagonalSize),
@@ -225,8 +274,10 @@ export function setActiveLayerVisibility(
 export function hideActiveLayers(layers: ActiveLayers) {
   setActiveLayerVisibility(layers, false, false);
 
+  setTransform(layers.frontWrapper, "", "0% 100%");
   setTransform(layers.frontPage, "", "0% 100%");
   setTransform(layers.frontRotator, "", "0% 100%");
+  setTransform(layers.hardEdge, "", "0% 50%");
   setTransform(layers.foldWrapper, "", "0% 100%");
   setTransform(layers.foldRotator, "", "0% 100%");
   setTransform(layers.foldPage, "", "0% 0%");

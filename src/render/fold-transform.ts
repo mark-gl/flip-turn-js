@@ -1,11 +1,11 @@
 import { diagonalLength, point } from "../core/math";
-import type { Corner, Point } from "../types/primitives";
-import type { FoldGeometry } from "../types/renderer";
-import type { ActiveTurn, FlipTurnState } from "../types/state";
 import { rotate, setTransform, translate } from "../dom/css-transforms";
 import { computeFoldGeometry } from "../layout/fold";
 import { cornerPoint } from "../layout/spread";
 import { activeTurnGradientOptions } from "../turn/options";
+import type { Corner, Point } from "../types/primitives";
+import type { FoldGeometry } from "../types/renderer";
+import type { ActiveTurn, FlipTurnState } from "../types/state";
 import { setGradient } from "./gradient";
 import type { ActiveLayers } from "./layers";
 
@@ -74,8 +74,144 @@ function translationThenRotation(
   return translate(x, y, useAcceleration) + rotate(angleDegrees);
 }
 
+function rotateY(degrees: number): string {
+  return ` rotateY(${degrees}deg) `;
+}
+
+function translateZ(depth: number): string {
+  return ` translateZ(${depth}px) `;
+}
+
+function hardTurnProgress(
+  pointX: number,
+  pageWidth: number,
+  side: "left" | "right"
+): number {
+  if (pageWidth <= 0) {
+    return 0;
+  }
+
+  if (side === "right") {
+    return Math.max(0, Math.min(1, (pageWidth - pointX) / (2 * pageWidth)));
+  }
+
+  return Math.max(0, Math.min(1, pointX / (2 * pageWidth)));
+}
+
 function clearShadowGradient(target: HTMLDivElement) {
   target.style.setProperty("background-image", "none");
+}
+
+function setHardPageShading(layers: ActiveLayers, enabled: boolean) {
+  if (enabled) {
+    layers.frontPage.style.setProperty(
+      "box-shadow",
+      "inset 1px 0 0 rgba(0, 0, 0, 0.2), 0 0.6rem 1.4rem rgba(0, 0, 0, 0.22)"
+    );
+    layers.foldContent.style.setProperty(
+      "box-shadow",
+      "inset -1px 0 0 rgba(0, 0, 0, 0.2), 0 0.6rem 1.4rem rgba(0, 0, 0, 0.2)"
+    );
+    return;
+  }
+
+  layers.frontPage.style.removeProperty("box-shadow");
+  layers.foldContent.style.removeProperty("box-shadow");
+}
+
+function setBackfaceVisibility(
+  target: HTMLDivElement,
+  value: "hidden" | "visible"
+) {
+  target.style.setProperty("backface-visibility", value);
+  target.style.setProperty("-webkit-backface-visibility", value);
+}
+
+function setHardBackFaceRenderingMode(layers: ActiveLayers, enabled: boolean) {
+  const visibility = enabled ? "visible" : "hidden";
+  setBackfaceVisibility(layers.foldRotator, visibility);
+  setBackfaceVisibility(layers.foldPage, visibility);
+  setBackfaceVisibility(layers.foldContent, "hidden");
+}
+
+function setHardPageEdgeThickness(
+  layers: ActiveLayers,
+  side: "left" | "right",
+  thickness: number
+) {
+  const clampedThickness = Math.max(0, thickness);
+  const visible = clampedThickness >= 0.5;
+
+  layers.hardEdge.style.setProperty("height", "100%");
+  layers.hardEdge.style.setProperty("width", `${clampedThickness}px`);
+  layers.hardEdge.style.setProperty("opacity", visible ? "1" : "0");
+
+  if (side === "right") {
+    layers.hardEdge.style.setProperty("left", "100%");
+    layers.hardEdge.style.setProperty("right", "auto");
+    setTransform(layers.hardEdge, rotateY(90), "0% 50%");
+    return;
+  }
+
+  layers.hardEdge.style.setProperty("left", "auto");
+  layers.hardEdge.style.setProperty("right", "100%");
+  setTransform(layers.hardEdge, rotateY(-90), "100% 50%");
+}
+
+function applyHardPageTransform(
+  state: FlipTurnState,
+  layers: ActiveLayers,
+  turn: ActiveTurn
+) {
+  layers.frontWrapper.style.setProperty("overflow", "visible");
+  setHardBackFaceRenderingMode(layers, false);
+
+  const rigidProgress = hardTurnProgress(
+    turn.point.x,
+    turn.pageWidth,
+    turn.side
+  );
+  const hardThickness =
+    state.activeTurnResolvedOptions?.hardThickness ??
+    state.options.hardThickness;
+  const backFaceShouldBeOnTop = rigidProgress >= 0.5;
+  const rotationYDegrees =
+    turn.side === "right" ? -180 * rigidProgress : 180 * rigidProgress;
+  const rotationOrigin = turn.side === "right" ? "0% 50%" : "100% 50%";
+  const backFaceCompensationX =
+    turn.side === "right" ? turn.pageWidth : -turn.pageWidth;
+  const hardTransform = rotateY(rotationYDegrees);
+
+  setTransform(
+    layers.frontWrapper,
+    hardTransform + translateZ(Math.max(0, hardThickness)),
+    rotationOrigin
+  );
+  setTransform(
+    layers.foldWrapper,
+    hardTransform + translate(backFaceCompensationX, 0, false) + rotateY(180),
+    rotationOrigin
+  );
+
+  layers.frontWrapper.style.setProperty(
+    "z-index",
+    backFaceShouldBeOnTop ? "26" : "34"
+  );
+  layers.foldWrapper.style.setProperty(
+    "z-index",
+    backFaceShouldBeOnTop ? "34" : "26"
+  );
+
+  setTransform(layers.frontRotator, "", "50% 50%");
+  setTransform(layers.frontPage, "", "50% 50%");
+  setTransform(layers.foldRotator, "", "50% 50%");
+  setTransform(layers.foldPage, "", "50% 50%");
+  setTransform(layers.foldContent, "", "50% 50%");
+
+  clearShadowGradient(layers.frontShadow);
+  clearShadowGradient(layers.backShadow);
+  setHardPageShading(layers, true);
+  setHardPageEdgeThickness(layers, turn.side, hardThickness);
 }
 
 function applyFoldShadows(
@@ -358,6 +494,21 @@ export function applyFoldTransform(
   turn: ActiveTurn,
   geometry: FoldGeometry
 ) {
+  if (state.activeTurnResolvedOptions?.hard === true) {
+    applyHardPageTransform(state, layers, turn);
+    return;
+  }
+
+  layers.frontWrapper.style.setProperty("overflow", "hidden");
+  setHardBackFaceRenderingMode(layers, false);
+  setTransform(layers.frontWrapper, "", "0% 100%");
+  layers.hardEdge.style.setProperty("opacity", "0");
+  layers.hardEdge.style.setProperty("width", "0px");
+  layers.hardEdge.style.setProperty("left", "auto");
+  layers.hardEdge.style.setProperty("right", "auto");
+  setTransform(layers.hardEdge, "", "0% 50%");
+  setHardPageShading(layers, false);
+
   const primitives = computeFoldTransformPrimitives(state, turn, geometry);
 
   applyFoldFrame(

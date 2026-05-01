@@ -27,6 +27,33 @@ type BindEventFn = <T extends Event>(
   listener: (event: T) => void
 ) => void;
 
+function isPointerInsideViewport(
+  clientX: number,
+  clientY: number,
+  box: ViewportBox
+): boolean {
+  return (
+    clientX >= box.left &&
+    clientX <= box.left + box.width &&
+    clientY >= box.top &&
+    clientY <= box.top + box.height
+  );
+}
+
+function isPointerNearViewport(
+  clientX: number,
+  clientY: number,
+  box: ViewportBox,
+  margin: number
+): boolean {
+  return (
+    clientX >= box.left - margin &&
+    clientX <= box.left + box.width + margin &&
+    clientY >= box.top - margin &&
+    clientY <= box.top + box.height + margin
+  );
+}
+
 function cornerFromPointer(
   runtime: FlipTurnRuntime,
   event: Pick<PointerEvent, "clientX" | "clientY">
@@ -211,4 +238,94 @@ export function bindPointerEvents(
     shouldTurnOnRelease(state, performance.now())
   );
   bindPointerRelease("pointercancel", () => false);
+
+  const ownerDocument = viewport.ownerDocument;
+
+  bind<PointerEvent>(ownerDocument, "pointermove", (event) => {
+    if (!state.interactionEnabled) {
+      return;
+    }
+
+    if (isActivePointer(state, event)) {
+      return;
+    }
+
+    const box = viewportBoxFromDomRect(viewport.getBoundingClientRect());
+    if (isPointerInsideViewport(event.clientX, event.clientY, box)) {
+      return;
+    }
+
+    const margin = state.options.cornerSize;
+
+    if (!isPointerNearViewport(event.clientX, event.clientY, box, margin)) {
+      if (state.activeTurn?.isPreview && shouldCancelPreviewTurn(runtime)) {
+        finishTurn(runtime, false);
+      }
+      return;
+    }
+
+    if (handlePreviewPointerMove(runtime, event)) {
+      return;
+    }
+
+    if (event.buttons !== 0 || state.activeTurn) {
+      return;
+    }
+
+    const pointerCorner = cornerFromPointer(runtime, event);
+    if (!pointerCorner) {
+      return;
+    }
+
+    startHoverPreview(runtime, pointerCorner.corner, pointerCorner.box);
+  });
+
+  bind<PointerEvent>(ownerDocument, "pointerdown", (event) => {
+    if (!state.interactionEnabled) {
+      return;
+    }
+
+    const box = viewportBoxFromDomRect(viewport.getBoundingClientRect());
+    if (isPointerInsideViewport(event.clientX, event.clientY, box)) {
+      return;
+    }
+
+    const margin = state.options.cornerSize;
+    if (!isPointerNearViewport(event.clientX, event.clientY, box, margin)) {
+      return;
+    }
+
+    if (state.activeTurn && !state.activeTurn.isPreview) {
+      if (state.activeTurn.phase === "committing") {
+        stopActiveTurn(runtime, "pointer");
+      }
+      return;
+    }
+
+    if (state.activeTurn?.isPreview) {
+      stopActiveTurn(runtime, "pointer");
+    }
+
+    const pointerCorner = cornerFromPointer(runtime, event);
+    if (!pointerCorner) {
+      return;
+    }
+
+    const { box: cornerBox, corner } = pointerCorner;
+    const direction = directionFromCorner(corner);
+    if (
+      !beginTurn(runtime, direction, corner, event, cornerBox, {
+        pointerDown: true,
+        isPreview: false,
+        pressedAt: performance.now(),
+        cause: "pointer",
+      })
+    ) {
+      emitBoundaryEvent(state, direction, "boundary");
+      return;
+    }
+
+    viewport.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  });
 }

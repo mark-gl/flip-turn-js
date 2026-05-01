@@ -6,6 +6,12 @@
   --flip-turn-focus-ring-offset: 2px;
 }
 
+.flip-turn-viewport.flip-turn-flipping {
+  perspective: 1800px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+}
+
 .flip-turn-viewport:focus {
   outline: none;
 }
@@ -67,6 +73,7 @@
 .flip-turn-active-back-shadow {
   position: absolute;
   pointer-events: none;
+  transform-style: preserve-3d;
 }
 
 .flip-turn-window-layer,
@@ -115,6 +122,23 @@
   bottom: auto;
 }
 
+.flip-turn-active-hard-edge {
+  position: absolute;
+  top: 0;
+  left: auto;
+  right: auto;
+  width: 0;
+  height: 100%;
+  opacity: 0;
+  background-color: #d4d4d4;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+  pointer-events: none;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: transform, width, opacity;
+}
+
 .flip-turn-active-front-rotator,
 .flip-turn-active-front-page,
 .flip-turn-active-fold-rotator,
@@ -122,6 +146,7 @@
 .flip-turn-active-fold-content {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
   will-change: transform;
 }
 

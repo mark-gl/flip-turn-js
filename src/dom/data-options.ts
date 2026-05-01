@@ -5,8 +5,24 @@ function parseBooleanWithFallback(
   value: string | undefined,
   fallback: boolean
 ): boolean {
-  if (value === "true" || value === "1") return true;
+  if (value === "" || value === "true" || value === "1") return true;
   if (value === "false" || value === "0") return false;
+  return fallback;
+}
+
+function parseHardAttribute(
+  dataset: DOMStringMap,
+  fallback: FlipTurnOptions["hard"]
+): FlipTurnOptions["hard"] {
+  const value = dataset.hard;
+  if (value === undefined) return fallback;
+  if (value === "" || value === "true" || value === "1") return true;
+  if (value === "false" || value === "0") return false;
+  if (value === "cover") return "cover";
+  const parts = value.split(",").map((s) => Number.parseInt(s.trim(), 10));
+  if (parts.length > 0 && parts.every((n) => Number.isFinite(n) && n > 0)) {
+    return parts;
+  }
   return fallback;
 }
 
@@ -100,6 +116,13 @@ export function optionsFromDataAttributes(
       dataset,
       "gradients",
       defaultOptions.gradients
+    ),
+    hard: parseHardAttribute(dataset, defaultOptions.hard),
+    hardThickness: parsePositiveNumberAttribute(
+      dataset,
+      ["hardThickness"],
+      defaultOptions.hardThickness,
+      0
     ),
     cornerSize: parsePositiveNumberAttribute(
       dataset,

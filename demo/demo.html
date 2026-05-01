@@ -23,6 +23,19 @@
       <div class="settings">
         <button id="button-double" class="active">Double page</button>
         <button id="button-single">Single page</button>
+        <button id="button-hard-covers">Hard covers: off</button>
+        <label id="hard-cover-thickness-setting" class="setting-range" for="hard-cover-thickness" hidden>
+          Cover thickness
+          <input
+            id="hard-cover-thickness"
+            type="range"
+            min="0"
+            max="24"
+            step="1"
+            value="8"
+          />
+          <span id="hard-cover-thickness-value">8px</span>
+        </label>
       </div>
       <div id="magazine" data-display="double">
         <img src="./assets/01.jpg" alt="Demo page 1" />

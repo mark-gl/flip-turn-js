@@ -6,6 +6,7 @@ import {
 } from "../layout/spread";
 import { defaultBackPageIndex, turningPageIndex } from "../layout/turn-plan";
 import type {
+  HardOption,
   PageTurnGradientOptions,
   PageTurnOptions,
 } from "../types/options";
@@ -13,6 +14,22 @@ import type { Corner, TurnDirection } from "../types/primitives";
 import type { ActiveTurnResolvedOptions, FlipTurnState } from "../types/state";
 
 type ResolvedGradientOptions = { front: boolean; back: boolean };
+
+function spineMatePageNumber(
+  pageNumber: number,
+  pageCount: number
+): number | null {
+  if (pageNumber < 1 || pageNumber > pageCount) {
+    return null;
+  }
+
+  const candidatePageNumber =
+    pageNumber % 2 === 1 ? pageNumber + 1 : pageNumber - 1;
+
+  return candidatePageNumber >= 1 && candidatePageNumber <= pageCount
+    ? candidatePageNumber
+    : null;
+}
 
 function pageOverridesForDirection(
   state: FlipTurnState,
@@ -63,16 +80,89 @@ export function activeTurnGradientOptions(
   );
 }
 
+function pageElementHardOverride(
+  state: FlipTurnState,
+  pageIndex: number | null
+): boolean | undefined {
+  if (pageIndex === null) return undefined;
+  const value = state.pages[pageIndex]?.value.dataset.hard;
+  if (value === undefined) return undefined;
+  if (value === "true" || value === "1" || value === "") return true;
+  if (value === "false" || value === "0") return false;
+  return undefined;
+}
+
+function isPageHardByOption(
+  hard: HardOption,
+  activePageNumber: number | null,
+  pairedPageNumber: number | null,
+  pageCount: number
+): boolean {
+  if (typeof hard === "boolean") return hard;
+  if (hard === "cover") {
+    return (
+      activePageNumber === 1 ||
+      activePageNumber === pageCount ||
+      pairedPageNumber === 1 ||
+      pairedPageNumber === pageCount
+    );
+  }
+  if (activePageNumber !== null && hard.includes(activePageNumber)) return true;
+  if (pairedPageNumber !== null && hard.includes(pairedPageNumber)) return true;
+  return false;
+}
+
 export function resolveTurnOptions(
   state: FlipTurnState,
   direction: TurnDirection
 ): ActiveTurnResolvedOptions {
   const perPage = pageOverridesForDirection(state, direction);
+  const activePageIndex = turningPageIndex(state, direction);
+  const activePageNumber =
+    activePageIndex === null ? null : activePageIndex + 1;
+  const pairedPageNumber =
+    activePageNumber === null
+      ? null
+      : spineMatePageNumber(activePageNumber, state.pageCount);
+  const pairedPage =
+    pairedPageNumber === null
+      ? {}
+      : (state.options.pageTurn[pairedPageNumber] ?? {});
+
+  const hardFromActivePage =
+    perPage.hard ?? pageElementHardOverride(state, activePageIndex);
+  const hardFromPairedPage =
+    pairedPage.hard ??
+    pageElementHardOverride(
+      state,
+      pairedPageNumber !== null ? pairedPageNumber - 1 : null
+    );
+  const resolvedHard =
+    hardFromActivePage === true || hardFromPairedPage === true
+      ? true
+      : hardFromActivePage === false
+        ? false
+        : hardFromPairedPage === false
+          ? false
+          : isPageHardByOption(
+              state.options.hard,
+              activePageNumber,
+              pairedPageNumber,
+              state.pageCount
+            );
+
+  const hardThicknessFromPages =
+    perPage.hardThickness ?? pairedPage.hardThickness;
 
   return {
     duration: finiteNonNegative(perPage.duration, state.options.duration),
     acceleration: perPage.acceleration ?? state.options.acceleration,
     elevation: finiteNonNegative(perPage.elevation, state.options.elevation),
+    hard: resolvedHard,
+    hardThickness: finiteNonNegative(
+      hardThicknessFromPages,
+      state.options.hardThickness
+    ),
     corners:
       perPage.corners !== undefined
         ? resolveCornerSelection(perPage.corners)

@@ -15,6 +15,8 @@ export type ActiveTurnResolvedOptions = {
   duration: number;
   acceleration: boolean;
   elevation: number;
+  hard: boolean;
+  hardThickness: number;
   corners: Record<Corner, boolean>;
   cornerSize: number;
   gradients: {

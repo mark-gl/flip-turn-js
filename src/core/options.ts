@@ -1,17 +1,18 @@
-import {
-  finiteAtLeastOne,
-  finiteFlooredWithin,
-  finiteNonNegative,
-} from "./math";
 import type {
   CornerMode,
   FlipTurnOptions,
+  HardOption,
   PageSourceInput,
   PageTurnOptionMap,
   ResolvedFlipTurnOptions,
 } from "../types/options";
 import type { Corner } from "../types/primitives";
 import type { PageSource } from "../types/state";
+import {
+  finiteAtLeastOne,
+  finiteFlooredWithin,
+  finiteNonNegative,
+} from "./math";
 
 const SUPPORTED_CORNERS: Corner[] = ["tl", "tr", "bl", "br"];
 
@@ -25,6 +26,7 @@ const DISABLED_CORNERS: Record<Corner, boolean> = {
 const DEFAULT_DURATION_MS = 600;
 const DEFAULT_ELEVATION_PX = 50;
 const DEFAULT_CORNER_SIZE_PX = 100;
+const DEFAULT_HARD_THICKNESS_PX = 0;
 const DEFAULT_PAGE_WINDOW = 6;
 
 function createDefaultOptions(): FlipTurnOptions {
@@ -36,6 +38,8 @@ function createDefaultOptions(): FlipTurnOptions {
     acceleration: true,
     elevation: DEFAULT_ELEVATION_PX,
     gradients: true,
+    hard: false,
+    hardThickness: DEFAULT_HARD_THICKNESS_PX,
     cornerSize: DEFAULT_CORNER_SIZE_PX,
     corners: "all",
     pages: [],
@@ -48,6 +52,14 @@ function createDefaultOptions(): FlipTurnOptions {
 }
 
 const internalDefaultOptions = createDefaultOptions();
+
+function normalizeHardOption(hard: HardOption): HardOption {
+  if (typeof hard === "boolean" || hard === "cover") return hard;
+  const normalized = [...new Set(hard)]
+    .filter((n) => Number.isInteger(n) && n >= 1)
+    .sort((a, b) => a - b);
+  return normalized.length > 0 ? normalized : false;
+}
 
 export function cloneApiBoundaryOptions(
   options: Partial<FlipTurnOptions>
@@ -65,6 +77,7 @@ export function cloneApiBoundaryOptions(
             : options.pages,
         }
       : {}),
+    ...(Array.isArray(options.hard) ? { hard: [...options.hard] } : {}),
   };
 }
 
@@ -77,6 +90,7 @@ export function cloneResolvedOptionsSnapshot(
     pageTurn: structuredClone(options.pageTurn),
     when: { ...options.when },
     pages: Array.isArray(options.pages) ? [...options.pages] : options.pages,
+    hard: Array.isArray(options.hard) ? [...options.hard] : options.hard,
   };
 }
 
@@ -175,6 +189,11 @@ export function resolveOptions(
     acceleration: Boolean(merged.acceleration),
     elevation: finiteNonNegative(merged.elevation, detachedBase.elevation),
     gradients: Boolean(merged.gradients),
+    hard: normalizeHardOption(merged.hard),
+    hardThickness: finiteNonNegative(
+      merged.hardThickness,
+      detachedBase.hardThickness
+    ),
     cornerSize: finiteAtLeastOne(merged.cornerSize, detachedBase.cornerSize),
     corners: resolveCornerSelection(merged.corners),
     virtualPageWindow: finiteFlooredWithin(

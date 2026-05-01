@@ -130,7 +130,7 @@ body.mobile-single .settings {
   text-decoration: none;
 }
 
-.settings button:hover {
+.settings button:hover { 
   background: var(--color-accent);
 }
 
@@ -138,6 +138,24 @@ body.mobile-single .settings {
   border-color: var(--color-link);
   background: var(--color-link);
   color: var(--color-background);
+}
+
+.setting-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 0.375rem;
+}
+
+.setting-range[hidden] {
+  display: none;
+}
+
+.setting-range input[type="range"] {
+  width: 7rem;
 }
 
 #magazine {

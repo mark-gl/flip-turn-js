@@ -1,5 +1,3 @@
-import type { FlipTurnRuntime, RenderPrimitives } from "../types/renderer";
-import type { FlipTurnState } from "../types/state";
 import { computeFoldGeometry } from "../layout/fold";
 import {
   isSingleDisplayMode,
@@ -11,6 +9,8 @@ import {
   resolvedBackPageSource,
   shouldRenderBackGradient,
 } from "../turn/options";
+import type { FlipTurnRuntime, RenderPrimitives } from "../types/renderer";
+import type { FlipTurnState } from "../types/state";
 import { applyFoldTransform, constrainFoldPointX } from "./fold-transform";
 import {
   hideActiveLayers,
@@ -51,10 +51,10 @@ function createRenderPrimitives(runtime: FlipTurnRuntime): RenderPrimitives {
       activeTurn.pageWidth,
       activeTurn.pageHeight
     ),
-    shouldShowBackShadow: shouldRenderBackGradient(
-      runtime.state,
-      activeTurn.direction
-    ),
+    shouldShowBackShadow:
+      runtime.state.activeTurnResolvedOptions?.hard === true
+        ? false
+        : shouldRenderBackGradient(runtime.state, activeTurn.direction),
   };
 }
 

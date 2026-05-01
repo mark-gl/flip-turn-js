@@ -1,6 +1,7 @@
 import { clamp, constrainCornerSize, point } from "../core/math";
 import { pageOffsetXForSide } from "../core/state";
 import {
+  canTurnDirection,
   cornerPoint,
   directionFromCorner,
   isDoubleDisplayMode,
@@ -152,6 +153,32 @@ export function cornerAtPoint(
 
   if (innerSpineCorner) {
     return null;
+  }
+
+  const forwardOptions = resolveTurnOptions(state, "forward");
+  const backwardOptions = resolveTurnOptions(state, "backward");
+  const hardForwardFromRightEdge =
+    isRightPage &&
+    forwardOptions.hard &&
+    localPoint.x >= pageWidth - forwardCornerSize;
+  const hardBackwardFromLeftEdge =
+    !isRightPage && backwardOptions.hard && localPoint.x <= backwardCornerSize;
+
+  if (hardForwardFromRightEdge || hardBackwardFromLeftEdge) {
+    if (hardForwardFromRightEdge && !canTurnDirection(state, "forward")) {
+      return null;
+    }
+
+    if (hardBackwardFromLeftEdge && !canTurnDirection(state, "backward")) {
+      return null;
+    }
+
+    const isTopHalf = localPoint.y <= box.height / 2;
+    if (hardForwardFromRightEdge) {
+      return isTopHalf ? "tr" : "br";
+    }
+
+    return isTopHalf ? "tl" : "bl";
   }
 
   const maxVerticalCornerSize = Math.max(backwardCornerSize, forwardCornerSize);

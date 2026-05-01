@@ -11,6 +11,8 @@ export type PageTurnGradientOptions = Partial<{
   back: boolean;
 }>;
 
+export type HardOption = boolean | "cover" | number[];
+
 export type PageTurnOptions = Partial<{
   duration: number;
   corners: CornerMode;
@@ -18,6 +20,8 @@ export type PageTurnOptions = Partial<{
   acceleration: boolean;
   elevation: number;
   gradients: boolean | PageTurnGradientOptions;
+  hard: boolean;
+  hardThickness: number;
   backPage: number | null;
 }>;
 
@@ -37,6 +41,8 @@ export type FlipTurnOptions = {
   acceleration: boolean;
   elevation: number;
   gradients: boolean;
+  hard: HardOption;
+  hardThickness: number;
   pageTurn: PageTurnOptionMap;
   when: FlipTurnWhen;
 };
