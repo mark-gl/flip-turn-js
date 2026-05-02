@@ -11,10 +11,7 @@ import type {
   PageTurnOptions,
 } from "../types/options";
 import type { Corner, TurnDirection } from "../types/primitives";
-import type {
-  ActiveTurnResolvedOptions,
-  FlipTurnState,
-} from "../types/state";
+import type { ActiveTurnResolvedOptions, FlipTurnState } from "../types/state";
 
 type ResolvedGradientOptions = { front: boolean; back: boolean };
 

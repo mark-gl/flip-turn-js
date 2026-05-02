@@ -7,9 +7,9 @@ import {
 } from "../layout/spread";
 import type {
   CancelableFlipTurnEventPayload,
-  FlipTurnEventSource,
   FlipTurnEventListener,
   FlipTurnEventPayload,
+  FlipTurnEventSource,
   FlipTurnLifecycleEvent,
 } from "../types/lifecycle";
 import type { TurnDirection } from "../types/primitives";
@@ -118,7 +118,9 @@ export function emitLifecycle(
 ): boolean {
   if (eventName === "start") {
     let defaultPrevented = false;
-    const startPayload = immutablePayload(basePayload(state, direction, source));
+    const startPayload = immutablePayload(
+      basePayload(state, direction, source)
+    );
     const callback = state.options.when[eventName];
     const startCallback = callback as
       | ((payload: CancelableFlipTurnEventPayload) => void)

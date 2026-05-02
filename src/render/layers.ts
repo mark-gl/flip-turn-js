@@ -116,8 +116,7 @@ export function updateActiveLayerOrder(
       expectedFrontZIndex &&
     layers.foldWrapper.style.getPropertyValue("z-index") ===
       Z_INDEX_FOLD_WRAPPER &&
-    layers.backShadow.style.getPropertyValue("z-index") ===
-      expectedBackZIndex;
+    layers.backShadow.style.getPropertyValue("z-index") === expectedBackZIndex;
 
   if (
     cached?.side === side &&
@@ -129,15 +128,9 @@ export function updateActiveLayerOrder(
 
   layerOrderCacheByLayers.set(layers, { side, movingInFront });
 
-  layers.frontWrapper.style.setProperty(
-    "z-index",
-    expectedFrontZIndex
-  );
+  layers.frontWrapper.style.setProperty("z-index", expectedFrontZIndex);
   layers.foldWrapper.style.setProperty("z-index", Z_INDEX_FOLD_WRAPPER);
-  layers.backShadow.style.setProperty(
-    "z-index",
-    expectedBackZIndex
-  );
+  layers.backShadow.style.setProperty("z-index", expectedBackZIndex);
 }
 
 function setStyles(el: HTMLDivElement, styles: Record<string, string>) {

@@ -130,7 +130,7 @@ body.mobile-single .settings {
   text-decoration: none;
 }
 
-.settings button:hover { 
+.settings button:hover {
   background: var(--color-accent);
 }
 
