@@ -13,7 +13,6 @@ export type PageSource = {
 
 export type ActiveTurnResolvedOptions = {
   duration: number;
-  acceleration: boolean;
   elevation: number;
   hard: boolean;
   hardThickness: number;

@@ -156,7 +156,6 @@ export function resolveTurnOptions(
 
   return {
     duration: finiteNonNegative(perPage.duration, state.options.duration),
-    acceleration: perPage.acceleration ?? state.options.acceleration,
     elevation: finiteNonNegative(perPage.elevation, state.options.elevation),
     hard: resolvedHard,
     hardThickness: finiteNonNegative(

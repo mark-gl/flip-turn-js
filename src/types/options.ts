@@ -17,7 +17,6 @@ export type PageTurnOptions = Partial<{
   duration: number;
   corners: CornerMode;
   cornerSize: number;
-  acceleration: boolean;
   elevation: number;
   gradients: boolean | PageTurnGradientOptions;
   hard: boolean;
@@ -38,7 +37,6 @@ export type FlipTurnOptions = {
   corners: CornerMode;
   cornerSize: number;
   duration: number;
-  acceleration: boolean;
   elevation: number;
   gradients: boolean;
   hard: HardOption;

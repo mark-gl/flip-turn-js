@@ -27,15 +27,10 @@ type FoldCornerConfig = {
   foldPageTransform: (
     geometry: FoldGeometry,
     pageWidth: number,
-    pageHeight: number,
-    useAcceleration: boolean
+    pageHeight: number
   ) => string;
   foldPageOrigin: string;
-  foldContentTransform: (
-    pageWidth: number,
-    pageHeight: number,
-    useAcceleration: boolean
-  ) => string;
+  foldContentTransform: (pageWidth: number, pageHeight: number) => string;
   foldContentOrigin: string;
 };
 
@@ -44,7 +39,6 @@ type FoldTransformPrimitives = {
   cornerConfig: FoldCornerConfig;
   pageWidth: number;
   pageHeight: number;
-  useAcceleration: boolean;
 };
 
 function applyFrameEdges(
@@ -59,19 +53,17 @@ function applyFrameEdges(
 function rotationThenTranslation(
   angleDegrees: number,
   x: number,
-  y: number,
-  useAcceleration: boolean
+  y: number
 ): string {
-  return rotate(angleDegrees) + translate(x, y, useAcceleration);
+  return rotate(angleDegrees) + translate(x, y);
 }
 
 function translationThenRotation(
   x: number,
   y: number,
-  angleDegrees: number,
-  useAcceleration: boolean
+  angleDegrees: number
 ): string {
-  return translate(x, y, useAcceleration) + rotate(angleDegrees);
+  return translate(x, y) + rotate(angleDegrees);
 }
 
 function rotateY(degrees: number): string {
@@ -306,9 +298,6 @@ function applyFoldFrame(
   const aliasingFix = foldGeometry.isLeftCorner ? -1 : 1;
 
   const origin = `${anchorPercent[0]}% ${anchorPercent[1]}%`;
-  const activeTurnResolvedOptions = state.activeTurnResolvedOptions;
-  const useAcceleration =
-    activeTurnResolvedOptions?.acceleration ?? state.options.acceleration;
 
   applyFrameEdges(layers.frontPage, framePosition);
 
@@ -317,8 +306,7 @@ function applyFoldFrame(
     rotationThenTranslation(
       angleDegrees,
       translatePoint.x + aliasingFix,
-      translatePoint.y,
-      useAcceleration
+      translatePoint.y
     ),
     origin
   );
@@ -330,8 +318,7 @@ function applyFoldFrame(
     translationThenRotation(
       -translatePoint.x + moveWidth - aliasingFix,
       -translatePoint.y + moveHeight,
-      -angleDegrees,
-      useAcceleration
+      -angleDegrees
     ),
     origin
   );
@@ -341,8 +328,7 @@ function applyFoldFrame(
     translationThenRotation(
       -translatePoint.x + foldGeometry.moveVector.x + moveWidth,
       -translatePoint.y + foldGeometry.moveVector.y + moveHeight,
-      -angleDegrees,
-      useAcceleration
+      -angleDegrees
     ),
     origin
   );
@@ -356,8 +342,7 @@ function applyFoldFrame(
         foldGeometry.moveVector.x,
       translatePoint.y +
         foldGeometry.diagonalFoldPoint.y -
-        foldGeometry.moveVector.y,
-      useAcceleration
+        foldGeometry.moveVector.y
     ),
     origin
   );
@@ -365,23 +350,12 @@ function applyFoldFrame(
   applyFoldShadows(state, layers, foldGeometry, pageWidth, pageHeight);
 }
 
-function contentTurnFromTop(
-  pageHeight: number,
-  useAcceleration: boolean
-): string {
-  return (
-    rotate(QUARTER_TURN_DEGREES) + translate(0, -pageHeight, useAcceleration)
-  );
+function contentTurnFromTop(pageHeight: number): string {
+  return rotate(QUARTER_TURN_DEGREES) + translate(0, -pageHeight);
 }
 
-function contentTurnFromRight(
-  pageWidth: number,
-  useAcceleration: boolean
-): string {
-  return (
-    rotate(THREE_QUARTER_TURN_DEGREES) +
-    translate(-pageWidth, 0, useAcceleration)
-  );
+function contentTurnFromRight(pageWidth: number): string {
+  return rotate(THREE_QUARTER_TURN_DEGREES) + translate(-pageWidth, 0);
 }
 
 const foldCornerConfigs: Record<Corner, FoldCornerConfig> = {
@@ -391,12 +365,12 @@ const foldCornerConfigs: Record<Corner, FoldCornerConfig> = {
     edgeIndexMap: [1, 0, 0, 1],
     anchorPercent: [100, 0],
     foldAngleDegrees: (angleDegrees) => angleDegrees,
-    foldPageTransform: (geometry, pageWidth, pageHeight, useAcceleration) =>
-      translate(-pageHeight, -pageWidth, useAcceleration) +
+    foldPageTransform: (geometry, pageWidth, pageHeight) =>
+      translate(-pageHeight, -pageWidth) +
       rotate(QUARTER_TURN_DEGREES - geometry.angleDegrees * 2),
     foldPageOrigin: "100% 100%",
-    foldContentTransform: (_pageWidth, pageHeight, useAcceleration) =>
-      contentTurnFromTop(pageHeight, useAcceleration),
+    foldContentTransform: (_pageWidth, pageHeight) =>
+      contentTurnFromTop(pageHeight),
     foldContentOrigin: "0% 0%",
   },
   tr: {
@@ -406,12 +380,11 @@ const foldCornerConfigs: Record<Corner, FoldCornerConfig> = {
     edgeIndexMap: [0, 0, 0, 1],
     anchorPercent: [0, 0],
     foldAngleDegrees: (angleDegrees) => -angleDegrees,
-    foldPageTransform: (geometry, pageWidth, _pageHeight, useAcceleration) =>
-      translate(0, -pageWidth, useAcceleration) +
+    foldPageTransform: (geometry, pageWidth) =>
+      translate(0, -pageWidth) +
       rotate(NEGATIVE_QUARTER_TURN_DEGREES + geometry.angleDegrees * 2),
     foldPageOrigin: "0% 100%",
-    foldContentTransform: (pageWidth, _pageHeight, useAcceleration) =>
-      contentTurnFromRight(pageWidth, useAcceleration),
+    foldContentTransform: (pageWidth) => contentTurnFromRight(pageWidth),
     foldContentOrigin: "0% 0%",
   },
   bl: {
@@ -421,12 +394,11 @@ const foldCornerConfigs: Record<Corner, FoldCornerConfig> = {
     edgeIndexMap: [1, 1, 0, 0],
     anchorPercent: [100, 100],
     foldAngleDegrees: (angleDegrees) => -angleDegrees,
-    foldPageTransform: (geometry, _pageWidth, pageHeight, useAcceleration) =>
-      translate(-pageHeight, 0, useAcceleration) +
+    foldPageTransform: (geometry, _pageWidth, pageHeight) =>
+      translate(-pageHeight, 0) +
       rotate(NEGATIVE_QUARTER_TURN_DEGREES + geometry.angleDegrees * 2),
     foldPageOrigin: "100% 0%",
-    foldContentTransform: (pageWidth, _pageHeight, useAcceleration) =>
-      contentTurnFromRight(pageWidth, useAcceleration),
+    foldContentTransform: (pageWidth) => contentTurnFromRight(pageWidth),
     foldContentOrigin: "0% 0%",
   },
   br: {
@@ -439,8 +411,8 @@ const foldCornerConfigs: Record<Corner, FoldCornerConfig> = {
     foldPageTransform: (geometry) =>
       rotate(QUARTER_TURN_DEGREES - geometry.angleDegrees * 2),
     foldPageOrigin: "0% 0%",
-    foldContentTransform: (_pageWidth, pageHeight, useAcceleration) =>
-      contentTurnFromTop(pageHeight, useAcceleration),
+    foldContentTransform: (_pageWidth, pageHeight) =>
+      contentTurnFromTop(pageHeight),
     foldContentOrigin: "0% 0%",
   },
 };
@@ -461,9 +433,6 @@ function computeFoldTransformPrimitives(
 ): FoldTransformPrimitives {
   const pageWidth = turn.pageWidth;
   const pageHeight = turn.pageHeight;
-  const useAcceleration =
-    state.activeTurnResolvedOptions?.acceleration ?? state.options.acceleration;
-
   const cornerConfig = foldCornerConfigs[turn.corner];
   let fixedGeometry = geometry;
 
@@ -484,7 +453,6 @@ function computeFoldTransformPrimitives(
     cornerConfig,
     pageWidth,
     pageHeight,
-    useAcceleration,
   };
 }
 
@@ -530,8 +498,7 @@ export function applyFoldTransform(
     primitives.cornerConfig.foldPageTransform(
       primitives.fixedGeometry,
       primitives.pageWidth,
-      primitives.pageHeight,
-      primitives.useAcceleration
+      primitives.pageHeight
     ),
     primitives.cornerConfig.foldPageOrigin
   );
@@ -539,8 +506,7 @@ export function applyFoldTransform(
     layers.foldContent,
     primitives.cornerConfig.foldContentTransform(
       primitives.pageWidth,
-      primitives.pageHeight,
-      primitives.useAcceleration
+      primitives.pageHeight
     ),
     primitives.cornerConfig.foldContentOrigin
   );

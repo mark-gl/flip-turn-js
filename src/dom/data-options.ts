@@ -101,11 +101,6 @@ export function optionsFromDataAttributes(
       defaultOptions.page,
       1
     ),
-    acceleration: parseBooleanAttribute(
-      dataset,
-      "acceleration",
-      defaultOptions.acceleration
-    ),
     elevation: parsePositiveNumberAttribute(
       dataset,
       ["elevation"],
