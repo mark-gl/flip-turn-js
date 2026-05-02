@@ -21,22 +21,24 @@ import {
 import { isAnimating, stopAnimation } from "./turn/animation";
 import { requestPageSet, requestTurn, stopActiveTurn } from "./turn/commands";
 
+type GoToPageOptions = {
+  skipTransition?: boolean;
+};
+
 export type FlipTurnApi = {
   update: (options: Partial<FlipTurnOptions>) => FlipTurnApi;
-  options: () => ResolvedFlipTurnOptions;
-  page: (pageNumber?: number) => number;
-  display: (displayMode?: DisplayMode) => DisplayMode;
+  readonly options: ResolvedFlipTurnOptions;
+  readonly page: number;
+  goToPage: (pageNumber: number, options?: GoToPageOptions) => number;
+  display: DisplayMode;
   next: () => boolean;
   previous: () => boolean;
-  size: (
-    width?: number | null,
-    height?: number | null
-  ) => FlipTurnApi | { width: number | null; height: number | null };
+  size: { width: number | null; height: number | null };
   setPages: (pages: PageSourceInput[]) => FlipTurnApi;
   addPage: (pageSource: PageSourceInput, pageNumber?: number) => FlipTurnApi;
   removePage: (pageNumber: number) => FlipTurnApi;
   stop: () => void;
-  animating: () => boolean;
+  readonly isAnimating: boolean;
   subscribe: (
     eventName: FlipTurnLifecycleEvent,
     listener: FlipTurnEventListener
@@ -49,7 +51,6 @@ export type FlipTurnApi = {
 type CreateApiArgs = {
   runtime: FlipTurnRuntime;
   state: FlipTurnState;
-  pageNavigationMode: () => "animated" | "snap";
   updateOptions: (options: Partial<FlipTurnOptions>) => FlipTurnApi;
   destroy: () => void;
 };
@@ -57,7 +58,6 @@ type CreateApiArgs = {
 export function createFlipTurnApi({
   runtime,
   state,
-  pageNavigationMode,
   updateOptions,
   destroy,
 }: CreateApiArgs): FlipTurnApi {
@@ -72,16 +72,11 @@ export function createFlipTurnApi({
     }
   };
 
-  const api: FlipTurnApi = {
+  const apiBase = {
     update: updateOptions,
-    options: () => cloneResolvedOptionsSnapshot(state.options),
-    page: (pageNumber?: number) => {
-      if (pageNumber === undefined) {
-        return currentPublicPageNumber(state);
-      }
-
+    goToPage: (pageNumber: number, options?: GoToPageOptions) => {
       const requestedPage = normalizePublicPageNumber(state, pageNumber);
-      const snap = pageNavigationMode() === "snap";
+      const snap = options?.skipTransition === true;
       const started = requestPageSet(runtime, requestedPage, snap);
 
       if (snap || !started) {
@@ -89,14 +84,6 @@ export function createFlipTurnApi({
       }
 
       return requestedPage;
-    },
-    display: (displayMode?: DisplayMode) => {
-      if (!displayMode) {
-        return state.displayMode;
-      }
-
-      updateOptions({ display: displayMode });
-      return state.displayMode;
     },
     next: () => {
       state.keyboardTargetPosition = null;
@@ -107,20 +94,6 @@ export function createFlipTurnApi({
       state.keyboardTargetPosition = null;
       state.pendingPageTarget = null;
       return requestTurn(runtime, "backward");
-    },
-    size: (width?: number | null, height?: number | null) => {
-      if (width === undefined && height === undefined) {
-        return {
-          width: state.options.width,
-          height: state.options.height,
-        };
-      }
-
-      updateOptions({
-        width: width === undefined ? state.options.width : width,
-        height: height === undefined ? state.options.height : height,
-      });
-      return api;
     },
     setPages: (pages: PageSourceInput[]) => {
       for (const pageSource of pages) {
@@ -175,8 +148,10 @@ export function createFlipTurnApi({
       stopAnimation(state);
       stopActiveTurn(runtime, "stop");
     },
-    animating: () => isAnimating(state),
-    subscribe: (eventName, listener) => {
+    subscribe: (
+      eventName: FlipTurnLifecycleEvent,
+      listener: FlipTurnEventListener
+    ) => {
       const unsubscribe = runtime.subscribeEvent
         ? runtime.subscribeEvent(eventName, listener).unsubscribe
         : subscribeLifecycleEvent(state, eventName, listener);
@@ -194,6 +169,42 @@ export function createFlipTurnApi({
     },
     destroy,
   };
+
+  const api = Object.defineProperties(apiBase, {
+    options: {
+      get: (): ResolvedFlipTurnOptions =>
+        cloneResolvedOptionsSnapshot(state.options),
+      enumerable: true,
+      configurable: true,
+    },
+    page: {
+      get: (): number => currentPublicPageNumber(state),
+      enumerable: true,
+      configurable: true,
+    },
+    isAnimating: {
+      get: (): boolean => isAnimating(state),
+      enumerable: true,
+      configurable: true,
+    },
+    display: {
+      get: (): DisplayMode => state.displayMode,
+      set: (mode: DisplayMode) => updateOptions({ display: mode }),
+      enumerable: true,
+      configurable: true,
+    },
+    size: {
+      get: (): { width: number | null; height: number | null } => ({
+        width: state.options.width,
+        height: state.options.height,
+      }),
+      set: (value: { width: number | null; height: number | null }) => {
+        updateOptions({ width: value.width, height: value.height });
+      },
+      enumerable: true,
+      configurable: true,
+    },
+  }) as FlipTurnApi;
 
   return api;
 }

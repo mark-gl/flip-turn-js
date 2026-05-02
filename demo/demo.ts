@@ -61,7 +61,7 @@ function setHardCoverMode(enabled: boolean) {
 }
 
 function setDisplay(mode: DisplayMode) {
-  flipTurn.display(mode);
+  flipTurn.display = mode;
   root.dataset.display = mode;
   root.classList.toggle("flip-turn-single", mode === "single");
   btnDouble?.classList.toggle("active", mode === "double");
