@@ -72,7 +72,6 @@ export function createFlipTurn(
   let initialized = false;
   let domSourceSyncScheduled = false;
   let useDomPages = false;
-  let pageNavigationMode: "animated" | "snap" = "animated";
   let lifecycleController: AbortController | null = null;
   let destroyed = false;
 
@@ -153,12 +152,6 @@ export function createFlipTurn(
 
     const detachedPartialOptions = cloneApiBoundaryOptions(partialOptions);
 
-    if (detachedPartialOptions.pageNavigationMode === "snap") {
-      pageNavigationMode = "snap";
-    } else if (detachedPartialOptions.pageNavigationMode === "animated") {
-      pageNavigationMode = "animated";
-    }
-
     if (detachedPartialOptions.pages !== undefined) {
       useDomPages = false;
     }
@@ -182,7 +175,6 @@ export function createFlipTurn(
   const api = createFlipTurnApi({
     runtime,
     state,
-    pageNavigationMode: () => pageNavigationMode,
     updateOptions,
     destroy,
   });
@@ -205,8 +197,6 @@ export function createFlipTurn(
       ...dataOptions,
       ...detachedOptions,
     });
-
-    pageNavigationMode = resolvedOptions.pageNavigationMode;
 
     if (!initialized) {
       initialized = true;

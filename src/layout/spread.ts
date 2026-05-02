@@ -322,7 +322,7 @@ export function maxTurnPosition(state: FlipTurnState): number {
   );
 }
 
-export function virtualPageWindowRange(state: FlipTurnState): {
+export function pageBufferRange(state: FlipTurnState): {
   start: number;
   end: number;
 } {
@@ -332,7 +332,7 @@ export function virtualPageWindowRange(state: FlipTurnState): {
 
   const windowSize = Math.max(
     FIRST_PAGE_NUMBER,
-    Math.floor(state.options.virtualPageWindow)
+    Math.floor(state.options.pageBuffer)
   );
 
   if (isSingleDisplayMode(state)) {

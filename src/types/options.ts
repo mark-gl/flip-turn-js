@@ -2,7 +2,6 @@ import type { FlipTurnWhen } from "./lifecycle";
 import type { Corner, DisplayMode } from "./primitives";
 
 export type CornerMask = Partial<Record<Corner, boolean>>;
-export type CornerMode = "forward" | "backward" | "all" | CornerMask;
 
 export type PageSourceInput = HTMLElement;
 
@@ -15,33 +14,32 @@ export type HardOption = boolean | "cover" | number[];
 
 export type PageTurnOptions = Partial<{
   duration: number;
-  corners: CornerMode;
+  corners: CornerMask;
   cornerSize: number;
   elevation: number;
   gradients: boolean | PageTurnGradientOptions;
   hard: boolean;
   hardThickness: number;
-  backPage: number | null;
+  backFace: number | null;
 }>;
 
 export type PageTurnOptionMap = Record<number, PageTurnOptions>;
 
 export type FlipTurnOptions = {
   pages: number | PageSourceInput[];
-  virtualPageWindow: number;
+  pageBuffer: number;
   page: number;
   display: DisplayMode;
   width: number | null;
   height: number | null;
-  pageNavigationMode: "animated" | "snap";
-  corners: CornerMode;
+  corners: CornerMask;
   cornerSize: number;
   duration: number;
   elevation: number;
   gradients: boolean;
   hard: HardOption;
   hardThickness: number;
-  pageTurn: PageTurnOptionMap;
+  pageOptions: PageTurnOptionMap;
   when: FlipTurnWhen;
 };
 

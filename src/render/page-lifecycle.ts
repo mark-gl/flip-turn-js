@@ -7,7 +7,7 @@ import {
   isSingleDisplayMode,
   pageIndexFromPublicPageNumber,
   pageSourceAtIndex,
-  virtualPageWindowRange,
+  pageBufferRange,
 } from "../layout/spread";
 import type { ActiveLayers } from "./layers";
 import { createLayerDiv, setupActiveLayers } from "./layers";
@@ -300,7 +300,7 @@ export function updateVirtualPageWindow(
   state: FlipTurnState,
   domState: DomRenderState
 ) {
-  const range = virtualPageWindowRange(state);
+  const range = pageBufferRange(state);
   const nextPageNumbers = new Set<number>();
 
   for (let pageNumber = range.start; pageNumber <= range.end; pageNumber++) {

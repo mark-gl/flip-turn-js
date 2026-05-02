@@ -2,7 +2,7 @@ import { computeFoldGeometry } from "../layout/fold";
 import {
   isSingleDisplayMode,
   spreadPageIndicesAt,
-  virtualPageWindowRange,
+  pageBufferRange,
 } from "../layout/spread";
 import { buildTurnRenderPlan } from "../layout/turn-plan";
 import {
@@ -154,7 +154,7 @@ export function renderDom(
 ) {
   const { dom } = domState;
   const isSingleMode = state.displayMode === "single";
-  const virtualWindow = virtualPageWindowRange(state);
+  const virtualWindow = pageBufferRange(state);
   const cache = domState.renderCache;
   const shouldSyncModeClasses =
     !cache || cache.displayMode !== state.displayMode;

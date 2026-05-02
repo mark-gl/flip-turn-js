@@ -11,7 +11,10 @@ import type {
   PageTurnOptions,
 } from "../types/options";
 import type { Corner, TurnDirection } from "../types/primitives";
-import type { ActiveTurnResolvedOptions, FlipTurnState } from "../types/state";
+import type {
+  ActiveTurnResolvedOptions,
+  FlipTurnState,
+} from "../types/state";
 
 type ResolvedGradientOptions = { front: boolean; back: boolean };
 
@@ -41,7 +44,7 @@ function pageOverridesForDirection(
   }
 
   const pageNumber = pageIndex + 1;
-  const pageScoped = state.options.pageTurn[pageNumber] ?? {};
+  const pageScoped = state.options.pageOptions[pageNumber] ?? {};
   return pageScoped;
 }
 
@@ -127,7 +130,7 @@ export function resolveTurnOptions(
   const pairedPage =
     pairedPageNumber === null
       ? {}
-      : (state.options.pageTurn[pairedPageNumber] ?? {});
+      : (state.options.pageOptions[pairedPageNumber] ?? {});
 
   const hardFromActivePage =
     perPage.hard ?? pageElementHardOverride(state, activePageIndex);
@@ -186,12 +189,12 @@ export function resolvedBackPageSource(
   direction: TurnDirection
 ) {
   const override = pageOverridesForDirection(state, direction);
-  if (override.backPage !== undefined) {
-    if (override.backPage === null) {
+  if (override.backFace !== undefined) {
+    if (override.backFace === null) {
       return null;
     }
 
-    return pageSourceAtPublicPageNumber(state, override.backPage);
+    return pageSourceAtPublicPageNumber(state, override.backFace);
   }
 
   if (isSingleDisplayMode(state)) {

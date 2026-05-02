@@ -1,5 +1,5 @@
 import { defaultOptions } from "../core/options";
-import type { FlipTurnOptions } from "../types/options";
+import type { CornerMask, FlipTurnOptions } from "../types/options";
 
 function parseBooleanWithFallback(
   value: string | undefined,
@@ -47,13 +47,10 @@ function parseDisplay(
   return value === "single" || value === "double" ? value : fallback;
 }
 
-function parseCornerMode(
-  value: string | undefined
-): FlipTurnOptions["corners"] | undefined {
-  if (value === "all" || value === "forward" || value === "backward") {
-    return value;
-  }
-
+function parseCornerMask(value: string | undefined): CornerMask | undefined {
+  if (value === "all") return { tl: true, tr: true, bl: true, br: true };
+  if (value === "forward") return { tr: true, br: true };
+  if (value === "backward") return { tl: true, bl: true };
   return undefined;
 }
 
@@ -85,7 +82,7 @@ export function optionsFromDataAttributes(
   element: HTMLElement
 ): Partial<FlipTurnOptions> {
   const dataset = element.dataset;
-  const corners = parseCornerMode(dataset.corners);
+  const corners = parseCornerMask(dataset.corners);
 
   return {
     display: parseDisplay(dataset.display, defaultOptions.display),
@@ -126,10 +123,10 @@ export function optionsFromDataAttributes(
       1
     ),
     ...(corners !== undefined ? { corners } : {}),
-    virtualPageWindow: parsePositiveNumberAttribute(
+    pageBuffer: parsePositiveNumberAttribute(
       dataset,
-      ["virtualPageWindow", "pageWindow"],
-      defaultOptions.virtualPageWindow,
+      ["pageBuffer"],
+      defaultOptions.pageBuffer,
       1
     ),
     width: parseDimension(dataset.width),

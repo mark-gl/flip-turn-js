@@ -1,6 +1,6 @@
 import type {
-  CornerMode,
   FlipTurnOptions,
+  CornerMask,
   HardOption,
   PageSourceInput,
   PageTurnOptionMap,
@@ -27,23 +27,22 @@ const DEFAULT_DURATION_MS = 600;
 const DEFAULT_ELEVATION_PX = 50;
 const DEFAULT_CORNER_SIZE_PX = 100;
 const DEFAULT_HARD_THICKNESS_PX = 0;
-const DEFAULT_PAGE_WINDOW = 6;
+const DEFAULT_PAGE_BUFFER = 6;
 
 function createDefaultOptions(): FlipTurnOptions {
   return {
     page: 1,
     display: "double",
-    pageNavigationMode: "animated",
     duration: DEFAULT_DURATION_MS,
     elevation: DEFAULT_ELEVATION_PX,
     gradients: true,
     hard: false,
     hardThickness: DEFAULT_HARD_THICKNESS_PX,
     cornerSize: DEFAULT_CORNER_SIZE_PX,
-    corners: "all",
+    corners: { tl: true, tr: true, bl: true, br: true },
     pages: [],
-    virtualPageWindow: DEFAULT_PAGE_WINDOW,
-    pageTurn: {},
+    pageBuffer: DEFAULT_PAGE_BUFFER,
+    pageOptions: {},
     when: {},
     width: null,
     height: null,
@@ -65,8 +64,8 @@ export function cloneApiBoundaryOptions(
 ): Partial<FlipTurnOptions> {
   return {
     ...options,
-    ...(options.pageTurn !== undefined
-      ? { pageTurn: structuredClone(options.pageTurn) }
+    ...(options.pageOptions !== undefined
+      ? { pageOptions: structuredClone(options.pageOptions) }
       : {}),
     ...(options.when !== undefined ? { when: { ...options.when } } : {}),
     ...(options.pages !== undefined
@@ -86,7 +85,7 @@ export function cloneResolvedOptionsSnapshot(
   return {
     ...options,
     corners: { ...options.corners },
-    pageTurn: structuredClone(options.pageTurn),
+    pageOptions: structuredClone(options.pageOptions),
     when: { ...options.when },
     pages: Array.isArray(options.pages) ? [...options.pages] : options.pages,
     hard: Array.isArray(options.hard) ? [...options.hard] : options.hard,
@@ -95,42 +94,25 @@ export function cloneResolvedOptionsSnapshot(
 
 export const defaultOptions: FlipTurnOptions = {
   ...internalDefaultOptions,
-  pageTurn: {},
+  pageOptions: {},
   when: {},
   pages: [],
 };
 
 export function resolveCornerSelection(
-  corners: CornerMode
-): Record<"tl" | "tr" | "bl" | "br", boolean> {
-  if (corners === "all") {
-    return { tl: true, tr: true, bl: true, br: true };
-  }
-
-  if (corners === "forward") {
-    return { tl: false, tr: true, bl: false, br: true };
-  }
-
-  if (corners === "backward") {
-    return { tl: true, tr: false, bl: true, br: false };
-  }
-
-  if (typeof corners === "string") {
-    throw new TypeError(`Invalid corners option '${corners}'`);
-  }
-
+  corners: CornerMask
+): Record<Corner, boolean> {
   const normalized = { ...DISABLED_CORNERS };
   for (const corner of SUPPORTED_CORNERS) {
     normalized[corner] = Boolean(corners[corner]);
   }
-
   return normalized;
 }
 
 function normalizePageTurnOptions(
-  pageTurn: PageTurnOptionMap
+  pageOptions: PageTurnOptionMap
 ): PageTurnOptionMap {
-  const normalizedEntries = Object.entries(pageTurn)
+  const normalizedEntries = Object.entries(pageOptions)
     .map(([rawPage, config]) => {
       const pageNumber = Number.parseInt(rawPage, 10);
       if (!Number.isFinite(pageNumber) || pageNumber < 1) {
@@ -142,7 +124,7 @@ function normalizePageTurnOptions(
     .filter(
       (
         entry
-      ): entry is readonly [string, FlipTurnOptions["pageTurn"][number]] =>
+      ): entry is readonly [string, FlipTurnOptions["pageOptions"][number]] =>
         entry !== null
     );
 
@@ -167,9 +149,9 @@ export function resolveOptions(
   const merged: FlipTurnOptions = {
     ...detachedBase,
     ...detachedPartial,
-    pageTurn: {
-      ...(detachedBase.pageTurn ?? {}),
-      ...(detachedPartial.pageTurn ?? {}),
+    pageOptions: {
+      ...(detachedBase.pageOptions ?? {}),
+      ...(detachedPartial.pageOptions ?? {}),
     },
     when: { ...(detachedPartial.when ?? detachedBase.when) },
   };
@@ -194,14 +176,12 @@ export function resolveOptions(
     ),
     cornerSize: finiteAtLeastOne(merged.cornerSize, detachedBase.cornerSize),
     corners: resolveCornerSelection(merged.corners),
-    virtualPageWindow: finiteFlooredWithin(
-      merged.virtualPageWindow,
-      detachedBase.virtualPageWindow,
-      {
-        minimum: 1,
-      }
+    pageBuffer: finiteFlooredWithin(
+      merged.pageBuffer,
+      detachedBase.pageBuffer,
+      { minimum: 1 }
     ),
-    pageTurn: normalizePageTurnOptions(merged.pageTurn ?? {}),
+    pageOptions: normalizePageTurnOptions(merged.pageOptions ?? {}),
     pageCount,
     width:
       merged.width === null || Number.isFinite(merged.width)

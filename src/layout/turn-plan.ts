@@ -117,7 +117,7 @@ function buildDoubleTurnPages(state: FlipTurnState, direction: TurnDirection) {
       baseLeftPage: current.left,
       baseRightPage: destination.right,
       frontPage: current.right,
-      backPage: destination.left,
+      backFace: destination.left,
       side: "right" as const,
     };
   }
@@ -126,7 +126,7 @@ function buildDoubleTurnPages(state: FlipTurnState, direction: TurnDirection) {
     baseLeftPage: destination.left,
     baseRightPage: current.right,
     frontPage: current.left,
-    backPage: destination.right,
+    backFace: destination.right,
     side: "left" as const,
   };
 }
@@ -136,7 +136,7 @@ function buildSingleTurnPages(state: FlipTurnState, direction: TurnDirection) {
   return {
     basePage: destinationIndex,
     frontPage: state.currentPageIndex,
-    backPage: null,
+    backFace: null,
     side: sideForDirection(direction),
   };
 }
