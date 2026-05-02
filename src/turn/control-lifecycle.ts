@@ -12,7 +12,7 @@ import {
 } from "../layout/spread";
 import { commitTurn } from "../layout/turn-plan";
 import { render } from "../render/render";
-import type { FlipTurnEventCause } from "../types/lifecycle";
+import type { FlipTurnEventSource } from "../types/lifecycle";
 import type { Corner, TurnDirection } from "../types/primitives";
 import type { FlipTurnRuntime, ViewportBox } from "../types/renderer";
 import { animateTurnCommit, animateTurnRestore } from "./animation";
@@ -36,7 +36,7 @@ type PointerLike = {
 };
 
 type ProgrammaticTurnStartOptions = {
-  cause: FlipTurnEventCause;
+  source: FlipTurnEventSource;
   elevation: number;
   pointerId: number;
   isPreview: boolean;
@@ -47,17 +47,17 @@ type ProgrammaticTurnStartOptions = {
 export function createProgrammaticTurnStartOptions(
   runtime: FlipTurnRuntime,
   direction: TurnDirection,
-  cause: FlipTurnEventCause,
-  overrides: Partial<Omit<ProgrammaticTurnStartOptions, "cause">> = {}
+  source: FlipTurnEventSource,
+  overrides: Partial<Omit<ProgrammaticTurnStartOptions, "source">> = {}
 ): ProgrammaticTurnStartOptions {
-  const defaultPointerId = cause === "hover" ? -2 : -1;
+  const defaultPointerId = source === "hover" ? -2 : -1;
 
   return {
-    cause,
+    source,
     elevation: resolveTurnOptions(runtime.state, direction).elevation,
     pointerId: defaultPointerId,
-    isPreview: cause === "hover",
-    commit: cause !== "hover",
+    isPreview: source === "hover",
+    commit: source !== "hover",
     ...overrides,
   };
 }
@@ -72,7 +72,7 @@ export function beginTurn(
     pointerDown?: boolean;
     isPreview?: boolean;
     pressedAt?: number;
-    cause?: FlipTurnEventCause;
+    source?: FlipTurnEventSource;
   }
 ): boolean {
   const state = runtime.state;
@@ -105,7 +105,7 @@ export function beginTurn(
     pointerId: pointerLike.pointerId,
     pointerDown: options?.pointerDown ?? true,
     isPreview: options?.isPreview ?? false,
-    cause: options?.cause ?? "pointer",
+    source: options?.source ?? "pointer",
     phase: options?.isPreview ? "previewing" : "idle",
     pressedAt: options?.pressedAt ?? performance.now(),
     point: localPoint,
@@ -118,7 +118,7 @@ export function beginTurn(
     state,
     "start",
     direction,
-    state.activeTurn.cause
+    state.activeTurn.source
   );
   if (!startAllowed) {
     clearActiveTurnState(state);
@@ -156,7 +156,7 @@ export function updateTurnPoint(
     state,
     "turning",
     state.activeTurn.direction,
-    state.activeTurn.cause
+    state.activeTurn.source
   );
   render(runtime);
 }
@@ -225,32 +225,32 @@ export function finishTurn(runtime: FlipTurnRuntime, shouldCommit: boolean) {
   }
 
   const direction = state.activeTurn.direction;
-  const cause = state.activeTurn.cause;
+  const source = state.activeTurn.source;
 
   if (shouldCommit) {
-    emitLifecycle(state, "turn", direction, cause);
+    emitLifecycle(state, "turn", direction, source);
     animateTurnCommit(runtime, () => {
       const previousPage = currentPublicPageNumber(state);
       commitTurn(state, direction);
-      emitLifecycle(state, "turned", direction, cause);
-      emitViewEntryBoundaryEvents(state, previousPage, direction, cause);
-      finalizeTurn(runtime, direction, cause);
+      emitLifecycle(state, "turned", direction, source);
+      emitViewEntryBoundaryEvents(state, previousPage, direction, source);
+      finalizeTurn(runtime, direction, source);
     });
     return;
   }
 
   animateTurnRestore(runtime, () => {
-    finalizeTurn(runtime, direction, cause);
+    finalizeTurn(runtime, direction, source);
   });
 }
 
 function finalizeTurn(
   runtime: FlipTurnRuntime,
   direction: TurnDirection,
-  cause: FlipTurnEventCause
+  source: FlipTurnEventSource
 ) {
   clearActiveTurnState(runtime.state);
-  emitLifecycle(runtime.state, "end", direction, cause);
+  emitLifecycle(runtime.state, "end", direction, source);
   render(runtime);
   continuePendingPageTarget(runtime);
 }
@@ -272,7 +272,7 @@ export function startProgrammaticTurn(
     pointerDown: false,
     isPreview: options.isPreview,
     pressedAt: performance.now(),
-    cause: options.cause,
+    source: options.source,
   });
 
   if (!started) {

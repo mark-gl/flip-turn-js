@@ -9,7 +9,7 @@ export type FlipTurnLifecycleEvent =
   | "first"
   | "last";
 
-export type FlipTurnEventCause =
+export type FlipTurnEventSource =
   | "pointer"
   | "keyboard"
   | "api"
@@ -27,7 +27,7 @@ export type FlipTurnEventPayload = {
   };
   view: number[];
   direction?: TurnDirection;
-  cause: FlipTurnEventCause;
+  source: FlipTurnEventSource;
 };
 
 export type CancelableFlipTurnEventPayload = FlipTurnEventPayload & {

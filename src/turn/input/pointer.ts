@@ -192,7 +192,7 @@ export function bindPointerEvents(
         pointerDown: true,
         isPreview: false,
         pressedAt: performance.now(),
-        cause: "pointer",
+        source: "pointer",
       })
     ) {
       emitBoundaryEvent(state, direction, "boundary");
@@ -318,7 +318,7 @@ export function bindPointerEvents(
         pointerDown: true,
         isPreview: false,
         pressedAt: performance.now(),
-        cause: "pointer",
+        source: "pointer",
       })
     ) {
       emitBoundaryEvent(state, direction, "boundary");

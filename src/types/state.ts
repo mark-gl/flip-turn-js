@@ -1,5 +1,5 @@
 import type {
-  FlipTurnEventCause,
+  FlipTurnEventSource,
   FlipTurnEventListener,
   FlipTurnLifecycleEvent,
 } from "./lifecycle";
@@ -36,7 +36,7 @@ export type ActiveTurn = {
   point: Point;
   phase: "idle" | "previewing" | "restoring" | "committing";
   isPreview: boolean;
-  cause: FlipTurnEventCause;
+  source: FlipTurnEventSource;
   pressedAt: number;
   progress: number;
 };

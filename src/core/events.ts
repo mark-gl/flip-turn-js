@@ -7,7 +7,7 @@ import {
 } from "../layout/spread";
 import type {
   CancelableFlipTurnEventPayload,
-  FlipTurnEventCause,
+  FlipTurnEventSource,
   FlipTurnEventListener,
   FlipTurnEventPayload,
   FlipTurnLifecycleEvent,
@@ -55,7 +55,7 @@ function currentSpreadPayload(state: FlipTurnState) {
 function basePayload(
   state: FlipTurnState,
   direction: TurnDirection | undefined,
-  cause: FlipTurnEventCause
+  source: FlipTurnEventSource
 ): FlipTurnEventPayload {
   const spreadPayload = currentSpreadPayload(state);
 
@@ -68,7 +68,7 @@ function basePayload(
     },
     view: spreadPayload.view,
     direction,
-    cause,
+    source,
   };
 }
 
@@ -114,11 +114,11 @@ export function emitLifecycle(
   state: FlipTurnState,
   eventName: FlipTurnLifecycleEvent,
   direction?: TurnDirection,
-  cause: FlipTurnEventCause = "api"
+  source: FlipTurnEventSource = "api"
 ): boolean {
   if (eventName === "start") {
     let defaultPrevented = false;
-    const startPayload = immutablePayload(basePayload(state, direction, cause));
+    const startPayload = immutablePayload(basePayload(state, direction, source));
     const callback = state.options.when[eventName];
     const startCallback = callback as
       | ((payload: CancelableFlipTurnEventPayload) => void)
@@ -141,7 +141,7 @@ export function emitLifecycle(
   }
 
   const callback = state.options.when[eventName];
-  const payload = immutablePayload(basePayload(state, direction, cause));
+  const payload = immutablePayload(basePayload(state, direction, source));
 
   if (callback) {
     const lifecycleCallback = callback as (
@@ -158,7 +158,7 @@ export function emitViewEntryBoundaryEvents(
   state: FlipTurnState,
   previousPage: number,
   direction: TurnDirection | undefined,
-  cause: FlipTurnEventCause
+  source: FlipTurnEventSource
 ) {
   if (!hasPages(state.pageCount)) {
     return;
@@ -166,10 +166,10 @@ export function emitViewEntryBoundaryEvents(
 
   const currentPage = currentPublicPageNumber(state);
   if (currentPage === 1 && previousPage !== 1) {
-    emitLifecycle(state, "first", direction, cause);
+    emitLifecycle(state, "first", direction, source);
   }
 
   if (currentPage === state.pageCount && previousPage !== state.pageCount) {
-    emitLifecycle(state, "last", direction, cause);
+    emitLifecycle(state, "last", direction, source);
   }
 }

@@ -1,7 +1,7 @@
 import { emitLifecycle, emitViewEntryBoundaryEvents } from "../core/events";
 import { constrainCornerSize } from "../core/math";
 import { clearActiveTurnState } from "../core/state";
-import type { FlipTurnEventCause } from "../types/lifecycle";
+import type { FlipTurnEventSource } from "../types/lifecycle";
 import type { Corner, TurnDirection } from "../types/primitives";
 import type { ViewportBox } from "../types/renderer";
 import { viewportBoxFromDomRect } from "../dom/dom";
@@ -59,7 +59,7 @@ function boostActiveAnimationSpeed(
 
 export function stopActiveTurn(
   runtime: FlipTurnRuntime,
-  cause: FlipTurnEventCause = "stop"
+  source: FlipTurnEventSource = "stop"
 ) {
   const state = runtime.state;
   if (!state.activeTurn) {
@@ -71,7 +71,7 @@ export function stopActiveTurn(
   releaseCapturedPointer(runtime, stoppedTurn.pointerId);
 
   clearActiveTurnState(state);
-  emitLifecycle(state, "end", stoppedTurn.direction, cause);
+  emitLifecycle(state, "end", stoppedTurn.direction, source);
   render(runtime);
 }
 
@@ -93,7 +93,7 @@ function releaseCapturedPointer(runtime: FlipTurnRuntime, pointerId: number) {
 
 function interruptForRequest(
   runtime: FlipTurnRuntime,
-  cause: FlipTurnEventCause
+  source: FlipTurnEventSource
 ): boolean {
   const state = runtime.state;
   if (state.activeTurn?.pointerDown) {
@@ -104,7 +104,7 @@ function interruptForRequest(
     return true;
   }
 
-  stopActiveTurn(runtime, cause);
+  stopActiveTurn(runtime, source);
   return true;
 }
 
@@ -178,7 +178,7 @@ function updateKeyboardTargetPosition(
 
 function startTurnTowardKeyboardTarget(
   runtime: FlipTurnRuntime,
-  cause: FlipTurnEventCause
+  source: FlipTurnEventSource
 ): boolean {
   const state = runtime.state;
   const targetPosition = state.keyboardTargetPosition;
@@ -218,7 +218,7 @@ function startTurnTowardKeyboardTarget(
   if (targetPosition === currentPosition) {
     state.keyboardTargetPosition = null;
     if (state.activeTurn) {
-      stopActiveTurn(runtime, cause);
+      stopActiveTurn(runtime, source);
     }
     return true;
   }
@@ -227,7 +227,7 @@ function startTurnTowardKeyboardTarget(
     targetPosition > currentPosition ? "forward" : "backward";
 
   if (state.activeTurn) {
-    stopActiveTurn(runtime, cause);
+    stopActiveTurn(runtime, source);
   }
 
   const box = viewportBoxFromDomRect(runtime.viewport.getBoundingClientRect());
@@ -235,7 +235,7 @@ function startTurnTowardKeyboardTarget(
     runtime,
     direction,
     box,
-    createProgrammaticTurnStartOptions(runtime, direction, cause)
+    createProgrammaticTurnStartOptions(runtime, direction, source)
   );
 
   if (!started) {
@@ -257,14 +257,14 @@ function startTurnTowardKeyboardTarget(
 export function requestTurn(
   runtime: FlipTurnRuntime,
   direction: TurnDirection,
-  cause: FlipTurnEventCause = "api"
+  source: FlipTurnEventSource = "api"
 ): boolean {
   const state = runtime.state;
   if (!state.interactionEnabled) {
     return false;
   }
 
-  if (cause === "keyboard") {
+  if (source === "keyboard") {
     state.pendingPageTarget = null;
     const { moved } = updateKeyboardTargetPosition(state, direction);
 
@@ -273,14 +273,14 @@ export function requestTurn(
       return false;
     }
 
-    return startTurnTowardKeyboardTarget(runtime, cause);
+    return startTurnTowardKeyboardTarget(runtime, source);
   }
 
   if (queueTurnRequest(state, direction)) {
     return true;
   }
 
-  if (!interruptForRequest(runtime, cause)) {
+  if (!interruptForRequest(runtime, source)) {
     return false;
   }
 
@@ -291,7 +291,7 @@ export function requestTurn(
       runtime,
       direction,
       box,
-      createProgrammaticTurnStartOptions(runtime, direction, cause)
+      createProgrammaticTurnStartOptions(runtime, direction, source)
     )
   ) {
     emitBoundaryEvent(state, direction, "boundary");
@@ -375,13 +375,13 @@ export function canRequestTurnDirection(
 export function emitBoundaryEvent(
   state: FlipTurnRuntime["state"],
   direction: TurnDirection,
-  cause: FlipTurnEventCause
+  source: FlipTurnEventSource
 ) {
   emitLifecycle(
     state,
     direction === "forward" ? "last" : "first",
     direction,
-    cause
+    source
   );
 }
 
