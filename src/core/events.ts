@@ -12,7 +12,7 @@ import type {
   FlipTurnEventPayload,
   FlipTurnEventSource,
 } from "../types/lifecycle";
-import type { TurnDirection } from "../types/primitives";
+import type { Corner, TurnDirection } from "../types/primitives";
 import type { FlipTurnState } from "../types/state";
 
 function immutablePayload(payload: FlipTurnEventPayload): FlipTurnEventPayload {
@@ -114,7 +114,8 @@ export function emitLifecycle(
   state: FlipTurnState,
   eventName: FlipTurnEvent,
   direction?: TurnDirection,
-  source: FlipTurnEventSource = "api"
+  source: FlipTurnEventSource = "api",
+  corner?: Corner
 ): boolean {
   if (eventName === "start") {
     let defaultPrevented = false;
@@ -128,6 +129,7 @@ export function emitLifecycle(
 
     const payload: CancelableFlipTurnEventPayload = {
       ...startPayload,
+      corner,
       get defaultPrevented() {
         return defaultPrevented;
       },

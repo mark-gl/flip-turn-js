@@ -1,4 +1,4 @@
-import type { DisplayMode, TurnDirection } from "./primitives";
+import type { Corner, DisplayMode, TurnDirection } from "./primitives";
 
 export type FlipTurnEvent =
   | "start"
@@ -31,6 +31,7 @@ export type FlipTurnEventPayload = {
 };
 
 export type CancelableFlipTurnEventPayload = FlipTurnEventPayload & {
+  corner?: Corner;
   defaultPrevented: boolean;
   preventDefault: () => void;
 };

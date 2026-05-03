@@ -118,7 +118,8 @@ export function beginTurn(
     state,
     "start",
     direction,
-    state.activeTurn.source
+    state.activeTurn.source,
+    state.activeTurn.corner
   );
   if (!startAllowed) {
     clearActiveTurnState(state);
