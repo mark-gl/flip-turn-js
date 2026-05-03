@@ -7,10 +7,10 @@ import {
 } from "../layout/spread";
 import type {
   CancelableFlipTurnEventPayload,
+  FlipTurnEvent,
   FlipTurnEventListener,
   FlipTurnEventPayload,
   FlipTurnEventSource,
-  FlipTurnLifecycleEvent,
 } from "../types/lifecycle";
 import type { TurnDirection } from "../types/primitives";
 import type { FlipTurnState } from "../types/state";
@@ -74,7 +74,7 @@ function basePayload(
 
 function dispatchSubscribers(
   state: FlipTurnState,
-  eventName: FlipTurnLifecycleEvent,
+  eventName: FlipTurnEvent,
   payload: FlipTurnEventPayload | CancelableFlipTurnEventPayload
 ) {
   const listeners = state.eventSubscribers.get(eventName);
@@ -89,7 +89,7 @@ function dispatchSubscribers(
 
 export function subscribeLifecycleEvent(
   state: FlipTurnState,
-  eventName: FlipTurnLifecycleEvent,
+  eventName: FlipTurnEvent,
   listener: FlipTurnEventListener
 ): () => void {
   const listeners = state.eventSubscribers.get(eventName);
@@ -112,7 +112,7 @@ export function subscribeLifecycleEvent(
 
 export function emitLifecycle(
   state: FlipTurnState,
-  eventName: FlipTurnLifecycleEvent,
+  eventName: FlipTurnEvent,
   direction?: TurnDirection,
   source: FlipTurnEventSource = "api"
 ): boolean {

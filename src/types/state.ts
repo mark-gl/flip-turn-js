@@ -1,7 +1,7 @@
 import type {
-  FlipTurnEventSource,
+  FlipTurnEvent,
   FlipTurnEventListener,
-  FlipTurnLifecycleEvent,
+  FlipTurnEventSource,
 } from "./lifecycle";
 import type { ResolvedFlipTurnOptions } from "./options";
 import type { Corner, DisplayMode, Point, TurnDirection } from "./primitives";
@@ -55,5 +55,5 @@ export type FlipTurnState = {
   keyboardTargetPosition: number | null;
   pendingPageTarget: number | null;
   interactionEnabled: boolean;
-  eventSubscribers: Map<FlipTurnLifecycleEvent, Set<FlipTurnEventListener>>;
+  eventSubscribers: Map<FlipTurnEvent, Set<FlipTurnEventListener>>;
 };

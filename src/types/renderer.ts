@@ -1,7 +1,7 @@
 import type {
   EventSubscription,
   FlipTurnEventListener,
-  FlipTurnLifecycleEvent,
+  FlipTurnEvent,
 } from "./lifecycle";
 import type { ResolvedFlipTurnOptions } from "./options";
 import type { Point } from "./primitives";
@@ -40,7 +40,7 @@ export type FlipTurnRuntime = {
   renderer: FlipTurnRenderer;
   viewport: HTMLDivElement;
   subscribeEvent?: (
-    eventName: FlipTurnLifecycleEvent,
+    eventName: FlipTurnEvent,
     listener: FlipTurnEventListener
   ) => EventSubscription;
 };

@@ -1,9 +1,16 @@
 import { subscribeLifecycleEvent } from "./core/events";
 import { cloneResolvedOptionsSnapshot } from "./core/options";
+import {
+  currentPublicPageNumber,
+  normalizePageIndex,
+  normalizePublicPageNumber,
+} from "./layout/spread";
+import { isAnimating, stopAnimation } from "./turn/animation";
+import { requestPageSet, requestTurn, stopActiveTurn } from "./turn/commands";
 import type {
   EventSubscription,
+  FlipTurnEvent,
   FlipTurnEventListener,
-  FlipTurnLifecycleEvent,
 } from "./types/lifecycle";
 import type {
   FlipTurnOptions,
@@ -13,13 +20,6 @@ import type {
 import type { DisplayMode } from "./types/primitives";
 import type { FlipTurnRuntime } from "./types/renderer";
 import type { FlipTurnState } from "./types/state";
-import {
-  currentPublicPageNumber,
-  normalizePageIndex,
-  normalizePublicPageNumber,
-} from "./layout/spread";
-import { isAnimating, stopAnimation } from "./turn/animation";
-import { requestPageSet, requestTurn, stopActiveTurn } from "./turn/commands";
 
 type GoToPageOptions = {
   skipTransition?: boolean;
@@ -40,7 +40,7 @@ export type FlipTurnApi = {
   stop: () => void;
   readonly isAnimating: boolean;
   subscribe: (
-    eventName: FlipTurnLifecycleEvent,
+    eventName: FlipTurnEvent,
     listener: FlipTurnEventListener
   ) => EventSubscription;
   disable: () => void;
@@ -148,10 +148,7 @@ export function createFlipTurnApi({
       stopAnimation(state);
       stopActiveTurn(runtime, "stop");
     },
-    subscribe: (
-      eventName: FlipTurnLifecycleEvent,
-      listener: FlipTurnEventListener
-    ) => {
+    subscribe: (eventName: FlipTurnEvent, listener: FlipTurnEventListener) => {
       const unsubscribe = runtime.subscribeEvent
         ? runtime.subscribeEvent(eventName, listener).unsubscribe
         : subscribeLifecycleEvent(state, eventName, listener);

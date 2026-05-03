@@ -1,6 +1,6 @@
 import type { DisplayMode, TurnDirection } from "./primitives";
 
-export type FlipTurnLifecycleEvent =
+export type FlipTurnEvent =
   | "start"
   | "turn"
   | "turning"

@@ -1,8 +1,5 @@
 import { defaultOptions, resolveOptions } from "./options";
-import type {
-  FlipTurnEventListener,
-  FlipTurnLifecycleEvent,
-} from "../types/lifecycle";
+import type { FlipTurnEventListener, FlipTurnEvent } from "../types/lifecycle";
 import type { DisplayMode } from "../types/primitives";
 import type {
   ActiveTurn,
@@ -11,7 +8,7 @@ import type {
   PageSource,
 } from "../types/state";
 
-const LIFECYCLE_EVENTS: FlipTurnLifecycleEvent[] = [
+const LIFECYCLE_EVENTS: FlipTurnEvent[] = [
   "start",
   "turn",
   "turning",
@@ -22,10 +19,7 @@ const LIFECYCLE_EVENTS: FlipTurnLifecycleEvent[] = [
 ];
 
 function createEventSubscribers() {
-  const subscribers = new Map<
-    FlipTurnLifecycleEvent,
-    Set<FlipTurnEventListener>
-  >();
+  const subscribers = new Map<FlipTurnEvent, Set<FlipTurnEventListener>>();
 
   for (const eventName of LIFECYCLE_EVENTS) {
     subscribers.set(eventName, new Set());
