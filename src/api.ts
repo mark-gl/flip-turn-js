@@ -14,16 +14,13 @@ import type {
 } from "./types/lifecycle";
 import type {
   FlipTurnOptions,
+  GoToPageOptions,
   PageSourceInput,
   ResolvedFlipTurnOptions,
 } from "./types/options";
 import type { DisplayMode } from "./types/primitives";
 import type { FlipTurnRuntime } from "./types/renderer";
 import type { FlipTurnState } from "./types/state";
-
-type GoToPageOptions = {
-  skipTransition?: boolean;
-};
 
 export type FlipTurnApi = {
   update: (options: Partial<FlipTurnOptions>) => FlipTurnApi;

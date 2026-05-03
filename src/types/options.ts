@@ -25,6 +25,10 @@ export type PageTurnOptions = Partial<{
 
 export type PageTurnOptionMap = Record<number, PageTurnOptions>;
 
+export type GoToPageOptions = {
+  skipTransition?: boolean;
+};
+
 export type FlipTurnOptions = {
   pages: number | PageSourceInput[];
   pageBuffer: number;
