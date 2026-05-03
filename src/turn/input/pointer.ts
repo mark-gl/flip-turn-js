@@ -213,6 +213,11 @@ export function bindPointerEvents(
     }
 
     if (isActivePointer(state, event)) {
+      if (event.buttons === 0 && state.activeTurn) {
+        state.activeTurn.pointerDown = false;
+        finishTurn(runtime, shouldTurnOnRelease(state, performance.now()));
+        return;
+      }
       updateTurnPoint(
         runtime,
         event,
@@ -245,12 +250,27 @@ export function bindPointerEvents(
 
   const ownerDocument = viewport.ownerDocument;
 
+  bind<PointerEvent>(ownerDocument, "pointerup", (event) => {
+    if (!state.interactionEnabled) {
+      return;
+    }
+    if (!isActivePointer(state, event) || !state.activeTurn) {
+      return;
+    }
+    state.activeTurn.pointerDown = false;
+    finishTurn(runtime, shouldTurnOnRelease(state, performance.now()));
+  });
+
   bind<PointerEvent>(ownerDocument, "pointermove", (event) => {
     if (!state.interactionEnabled) {
       return;
     }
 
     if (isActivePointer(state, event)) {
+      if (event.buttons === 0 && state.activeTurn) {
+        state.activeTurn.pointerDown = false;
+        finishTurn(runtime, shouldTurnOnRelease(state, performance.now()));
+      }
       return;
     }
 
