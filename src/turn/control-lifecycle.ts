@@ -15,7 +15,7 @@ import { render } from "../render/render";
 import type { FlipTurnEventSource } from "../types/lifecycle";
 import type { Corner, TurnDirection } from "../types/primitives";
 import type { FlipTurnRuntime, ViewportBox } from "../types/renderer";
-import { animateTurnCommit, animateTurnRestore } from "./animation";
+import { animateTurnCommit, animateTurnRestore, stopAnimation } from "./animation";
 import {
   cornerForDirection,
   localTurnPointFromClient,
@@ -217,6 +217,22 @@ function createProgrammaticPointer(
       runtime.state.displayMode
     ),
   };
+}
+
+export function skipCommitAnimation(runtime: FlipTurnRuntime) {
+  const state = runtime.state;
+  if (!state.activeTurn || state.activeTurn.phase !== "committing") {
+    return;
+  }
+
+  const { direction, source } = state.activeTurn;
+  const previousPage = currentPublicPageNumber(state);
+
+  stopAnimation(state);
+  commitTurn(state, direction);
+  emitLifecycle(state, "turned", direction, source);
+  emitViewEntryBoundaryEvents(state, previousPage, direction, source);
+  finalizeTurn(runtime, direction, source);
 }
 
 export function finishTurn(runtime: FlipTurnRuntime, shouldCommit: boolean) {

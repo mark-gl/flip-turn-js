@@ -15,6 +15,7 @@ import {
   finishTurn,
   isActivePointer,
   shouldTurnOnRelease,
+  skipCommitAnimation,
   updateTurnPoint,
 } from "../control-lifecycle";
 import { cornerAtPoint } from "../geometry";
@@ -170,10 +171,13 @@ export function bindPointerEvents(
     }
 
     if (state.activeTurn && !state.activeTurn.isPreview) {
-      if (state.activeTurn.phase === "committing") {
-        stopActiveTurn(runtime, "pointer");
+      if (state.activeTurn.phase !== "committing") {
+        return;
       }
-      return;
+      skipCommitAnimation(runtime);
+      if (state.activeTurn) {
+        return;
+      }
     }
 
     if (state.activeTurn?.isPreview) {
@@ -296,10 +300,13 @@ export function bindPointerEvents(
     }
 
     if (state.activeTurn && !state.activeTurn.isPreview) {
-      if (state.activeTurn.phase === "committing") {
-        stopActiveTurn(runtime, "pointer");
+      if (state.activeTurn.phase !== "committing") {
+        return;
       }
-      return;
+      skipCommitAnimation(runtime);
+      if (state.activeTurn) {
+        return;
+      }
     }
 
     if (state.activeTurn?.isPreview) {
