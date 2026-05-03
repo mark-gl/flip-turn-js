@@ -148,13 +148,9 @@ export function createFlipTurnApi({
       stopAnimation(state);
       stopActiveTurn(runtime, "stop");
     },
-    subscribe: (eventName: FlipTurnEvent, listener: FlipTurnEventListener) => {
-      const unsubscribe = runtime.subscribeEvent
-        ? runtime.subscribeEvent(eventName, listener).unsubscribe
-        : subscribeLifecycleEvent(state, eventName, listener);
-
-      return { unsubscribe };
-    },
+    subscribe: (eventName: FlipTurnEvent, listener: FlipTurnEventListener) => ({
+      unsubscribe: subscribeLifecycleEvent(state, eventName, listener),
+    }),
     disable: () => {
       state.interactionEnabled = false;
       state.keyboardTargetPosition = null;

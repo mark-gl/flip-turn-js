@@ -1,7 +1,6 @@
 import type { FlipTurnApi } from "./api";
 import { createFlipTurnApi } from "./api";
 import { applyResolvedOptions } from "./core/apply-options";
-import { subscribeLifecycleEvent } from "./core/events";
 import {
   cloneApiBoundaryOptions,
   defaultOptions,
@@ -62,10 +61,6 @@ export function createFlipTurn(
     renderer: configuredRenderer ?? createDomRenderer(),
     viewport: rootElement,
   };
-
-  runtime.subscribeEvent = (eventName, listener) => ({
-    unsubscribe: subscribeLifecycleEvent(runtime.state, eventName, listener),
-  });
 
   const state = runtime.state;
 
