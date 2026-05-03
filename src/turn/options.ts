@@ -147,7 +147,7 @@ export function resolveTurnOptions(
           : isPageHardByOption(
               state.options.hard,
               activePageNumber,
-              pairedPageNumber,
+              isSingleDisplayMode(state) ? null : pairedPageNumber,
               state.pageCount
             );
 
