@@ -54,7 +54,8 @@
 }
 
 .flip-turn-viewport.flip-turn-single {
-  overflow: hidden;
+  overflow: visible;
+  clip-path: inset(-100vmax 0);
 }
 
 .flip-turn-viewport.flip-turn-single .flip-turn-static-left-page,
