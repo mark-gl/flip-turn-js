@@ -140,8 +140,6 @@
   will-change: transform, width, opacity;
 }
 
-.flip-turn-active-front-rotator,
-.flip-turn-active-front-page,
 .flip-turn-active-fold-rotator,
 .flip-turn-active-fold-page,
 .flip-turn-active-fold-content {

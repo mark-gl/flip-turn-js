@@ -55,7 +55,7 @@ function rotationThenTranslation(
   x: number,
   y: number
 ): string {
-  return rotate(angleDegrees) + translate(x, y);
+  return rotate(angleDegrees) + translate(x, y, false);
 }
 
 function translationThenRotation(
@@ -63,7 +63,7 @@ function translationThenRotation(
   y: number,
   angleDegrees: number
 ): string {
-  return translate(x, y) + rotate(angleDegrees);
+  return translate(x, y, false) + rotate(angleDegrees);
 }
 
 function rotateY(degrees: number): string {
