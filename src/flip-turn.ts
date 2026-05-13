@@ -15,6 +15,7 @@ import {
 } from "./dom/css-transforms";
 import { optionsFromDataAttributes } from "./dom/data-options";
 import { domChildPageSources, viewportBoxFromDomRect } from "./dom/dom";
+import { pageWidthForBox } from "./layout/spread";
 import { createDomRenderer } from "./render/dom-renderer";
 import { render } from "./render/render";
 import { stopAnimation } from "./turn/animation";
@@ -111,15 +112,28 @@ export function createFlipTurn(
     lifecycleController = new AbortController();
     const { signal } = lifecycleController;
 
-    const onResize = () => {
-      runtime.renderer.resize?.(
-        runtime,
-        viewportBoxFromDomRect(rootElement.getBoundingClientRect())
-      );
-      render(runtime);
-    };
+    const resizeObserver = new ResizeObserver(() => {
+      const newBox = viewportBoxFromDomRect(rootElement.getBoundingClientRect());
+      runtime.renderer.resize?.(runtime, newBox);
 
-    window.addEventListener("resize", onResize, { signal });
+      const { activeTurn } = state;
+      if (activeTurn && activeTurn.pageWidth > 0 && activeTurn.pageHeight > 0) {
+        const newPageWidth = pageWidthForBox(state, newBox);
+        const newPageHeight = newBox.height;
+        activeTurn.point = {
+          x: activeTurn.point.x * (newPageWidth / activeTurn.pageWidth),
+          y: activeTurn.point.y * (newPageHeight / activeTurn.pageHeight),
+        };
+        activeTurn.pageWidth = newPageWidth;
+        activeTurn.pageHeight = newPageHeight;
+      }
+
+      render(runtime);
+    });
+    resizeObserver.observe(rootElement);
+    signal.addEventListener("abort", () => resizeObserver.disconnect(), {
+      once: true,
+    });
 
     const observer = new MutationObserver(scheduleDomSourceSync);
     observer.observe(rootElement, { childList: true });
