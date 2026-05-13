@@ -36,14 +36,10 @@
       "import": "./dist/flip-turn.js",
       "require": "./dist/flip-turn.cjs",
       "default": "./dist/flip-turn.js"
-    },
-    "./flip-turn.css": "./dist/flip-turn.css"
+    }
   },
   "files": [
     "dist"
-  ],
-  "sideEffects": [
-    "./dist/*.css"
   ],
   "type": "module",
   "scripts": {

@@ -1,5 +1,6 @@
 import type { FlipTurnApi } from "./api";
 import { createFlipTurnApi } from "./api";
+import styles from "./flip-turn.css" with { type: "text" };
 import { applyResolvedOptions } from "./core/apply-options";
 import {
   cloneApiBoundaryOptions,
@@ -21,6 +22,16 @@ import { stopActiveTurn } from "./turn/commands";
 import { bindInputEvents } from "./turn/input/binding";
 import type { FlipTurnOptions } from "./types/options";
 import type { FlipTurnRenderer, FlipTurnRuntime } from "./types/renderer";
+
+const STYLES_ID = "flip-turn-styles";
+
+function injectStyles() {
+  if (document.getElementById(STYLES_ID)) return;
+  const el = document.createElement("style");
+  el.id = STYLES_ID;
+  el.textContent = styles;
+  document.head.appendChild(el);
+}
 
 export * as Lifecycle from "./types/lifecycle";
 export * as Options from "./types/options";
@@ -195,6 +206,7 @@ export function createFlipTurn(
 
     if (!initialized) {
       initialized = true;
+      injectStyles();
       runtime.renderer.init?.(runtime);
       initTransformSupport();
       setTransform(rootElement, translate(0, 0, true));
