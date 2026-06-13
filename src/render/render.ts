@@ -108,6 +108,11 @@ function renderTurning(
     setPageFace(state, domState, dom.staticRightPage, turnPlan.baseRightPage);
   }
 
+  if (primitives.suppressActiveLayers) {
+    hideActiveLayers(activeLayers);
+    return;
+  }
+
   setPageFace(state, domState, activeLayers.frontPage, turnPlan.frontPage, {
     allowLiveMove: true,
     allowReuse: true,

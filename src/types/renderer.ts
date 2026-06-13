@@ -28,6 +28,7 @@ export type FoldGeometry = {
 export type RenderPrimitives = {
   foldGeometry: FoldGeometry | null;
   shouldShowBackShadow: boolean;
+  suppressActiveLayers?: boolean;
 };
 
 export type FlipTurnRuntime = {

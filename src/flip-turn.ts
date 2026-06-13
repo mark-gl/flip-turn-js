@@ -16,6 +16,7 @@ import {
 import { optionsFromDataAttributes } from "./dom/data-options";
 import { domChildPageSources, viewportBoxFromDomRect } from "./dom/dom";
 import { pageWidthForBox } from "./layout/spread";
+import { createMeshRenderer } from "./render/mesh-renderer";
 import { createDomRenderer } from "./render/dom-renderer";
 import { render } from "./render/render";
 import { stopAnimation } from "./turn/animation";
@@ -41,6 +42,7 @@ export * as Renderer from "./types/renderer";
 export * as State from "./types/state";
 
 export type { FlipTurnApi };
+export { createMeshRenderer, createDomRenderer };
 
 /**
  * Optional configuration used while creating a `flip-turn` instance.
@@ -113,7 +115,9 @@ export function createFlipTurn(
     const { signal } = lifecycleController;
 
     const resizeObserver = new ResizeObserver(() => {
-      const newBox = viewportBoxFromDomRect(rootElement.getBoundingClientRect());
+      const newBox = viewportBoxFromDomRect(
+        rootElement.getBoundingClientRect()
+      );
       runtime.renderer.resize?.(runtime, newBox);
 
       const { activeTurn } = state;

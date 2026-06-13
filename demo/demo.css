@@ -115,10 +115,6 @@ body {
   gap: 0.5rem;
 }
 
-body.mobile-single .settings {
-  display: none;
-}
-
 .settings button {
   min-height: 2.75rem;
   padding: 0.625rem 1.125rem;

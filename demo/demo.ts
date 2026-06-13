@@ -1,5 +1,12 @@
-import { createFlipTurn } from "../src/flip-turn";
+import {
+  createMeshRenderer,
+  createDomRenderer,
+  createFlipTurn,
+} from "../src/flip-turn";
+import type { FlipTurnApi } from "../src/api";
 import type { DisplayMode } from "../src/types/primitives";
+
+type RendererType = "dom" | "mesh";
 
 const rootElement = document.querySelector<HTMLDivElement>("#magazine");
 if (!rootElement) throw new Error("Missing #magazine");
@@ -16,9 +23,17 @@ const initialDisplayMode: DisplayMode = mobileLayoutQuery.matches
 
 root.dataset.display = initialDisplayMode;
 root.classList.toggle("flip-turn-single", initialDisplayMode === "single");
-document.body.classList.toggle("mobile-single", mobileLayoutQuery.matches);
 
-const flipTurn = createFlipTurn(root);
+let currentRendererType: RendererType = "dom";
+
+function buildRenderer(type: RendererType) {
+  if (type === "dom") return createDomRenderer();
+  return createMeshRenderer();
+}
+
+let flipTurn: FlipTurnApi = createFlipTurn(root, {
+  renderer: buildRenderer(currentRendererType),
+});
 
 const btnDouble = document.querySelector<HTMLButtonElement>("#button-double");
 const btnSingle = document.querySelector<HTMLButtonElement>("#button-single");
@@ -34,6 +49,8 @@ const hardCoverThicknessSetting = document.querySelector<HTMLLabelElement>(
 const hardCoverThicknessValue = document.querySelector<HTMLSpanElement>(
   "#hard-cover-thickness-value"
 );
+const btnRenderer =
+  document.querySelector<HTMLButtonElement>("#button-renderer");
 
 let hardCoverModeEnabled = false;
 let hardCoverThickness = 8;
@@ -68,6 +85,36 @@ function setDisplay(mode: DisplayMode) {
   btnSingle?.classList.toggle("active", mode === "single");
 }
 
+function syncRendererButton() {
+  const css3dEnabled = currentRendererType === "mesh";
+  btnRenderer?.classList.toggle("active", css3dEnabled);
+  if (btnRenderer) {
+    btnRenderer.textContent = `3D renderer: ${css3dEnabled ? "on" : "off"}`;
+  }
+}
+
+function setRenderer(type: RendererType) {
+  if (type === currentRendererType) return;
+
+  const savedPage = flipTurn.page;
+  const savedDisplay = flipTurn.display;
+  flipTurn.destroy();
+  currentRendererType = type;
+
+  flipTurn = createFlipTurn(root, {
+    renderer: buildRenderer(type),
+    options: {
+      page: savedPage,
+      display: savedDisplay,
+      hard: hardCoverModeEnabled ? "cover" : false,
+      hardThickness: hardCoverThickness,
+    },
+  });
+
+  root.classList.add("is-ready");
+  syncRendererButton();
+}
+
 btnDouble?.addEventListener("click", () => {
   preferredDesktopMode = "double";
   setDisplay("double");
@@ -80,6 +127,10 @@ btnSingle?.addEventListener("click", () => {
 
 btnHardCovers?.addEventListener("click", () => {
   setHardCoverMode(!hardCoverModeEnabled);
+});
+
+btnRenderer?.addEventListener("click", () => {
+  setRenderer(currentRendererType === "dom" ? "mesh" : "dom");
 });
 
 hardCoverThicknessInput?.addEventListener("input", () => {
@@ -96,7 +147,6 @@ hardCoverThicknessInput?.addEventListener("input", () => {
 
 function applyResponsiveDisplayMode() {
   const isMobileLayout = mobileLayoutQuery.matches;
-  document.body.classList.toggle("mobile-single", isMobileLayout);
 
   if (isMobileLayout) {
     setDisplay("single");
@@ -111,4 +161,5 @@ mobileLayoutQuery.addEventListener("change", applyResponsiveDisplayMode);
 setDisplay(initialDisplayMode);
 syncHardCoverThicknessLabel();
 setHardCoverMode(false);
+syncRendererButton();
 root.classList.add("is-ready");
