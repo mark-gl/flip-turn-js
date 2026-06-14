@@ -181,7 +181,7 @@ export function resolveOptions(
     cornerSize: finiteAtLeastOne(merged.cornerSize, detachedBase.cornerSize),
     cornerOutset:
       merged.cornerOutset === null || merged.cornerOutset === undefined
-        ? finiteAtLeastOne(merged.cornerSize, detachedBase.cornerSize)
+        ? null
         : finiteNonNegative(merged.cornerOutset, 0),
     corners: resolveCornerSelection(merged.corners),
     pageBuffer: finiteFlooredWithin(

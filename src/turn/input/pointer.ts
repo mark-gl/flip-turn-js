@@ -301,7 +301,7 @@ export function bindPointerEvents(
       return;
     }
 
-    const margin = state.options.cornerOutset;
+    const margin = state.options.cornerOutset ?? state.options.cornerSize;
 
     if (!isPointerNearViewport(event.clientX, event.clientY, box, margin)) {
       if (state.activeTurn?.isPreview && shouldCancelPreviewTurn(runtime)) {
@@ -336,7 +336,7 @@ export function bindPointerEvents(
       return;
     }
 
-    const margin = state.options.cornerOutset;
+    const margin = state.options.cornerOutset ?? state.options.cornerSize;
     if (!isPointerBesideViewport(event.clientX, event.clientY, box, margin)) {
       return;
     }

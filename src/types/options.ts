@@ -49,10 +49,6 @@ export type FlipTurnOptions = {
   when: FlipTurnWhen;
 };
 
-export type ResolvedFlipTurnOptions = Omit<
-  FlipTurnOptions,
-  "corners" | "cornerOutset"
-> & {
+export type ResolvedFlipTurnOptions = Omit<FlipTurnOptions, "corners"> & {
   corners: Record<Corner, boolean>;
-  cornerOutset: number;
 };
