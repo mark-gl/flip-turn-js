@@ -2,8 +2,13 @@
   position: relative;
   touch-action: none;
   --flip-turn-page-background: #fff;
+  --flip-turn-back-face-opacity: 1;
   --flip-turn-focus-ring-width: 2px;
   --flip-turn-focus-ring-offset: 2px;
+}
+
+.flip-turn-viewport.flip-turn-single {
+  --flip-turn-back-face-opacity: 0.5;
 }
 
 .flip-turn-viewport.flip-turn-flipping {
@@ -178,6 +183,13 @@
   top: 0;
   right: auto;
   bottom: auto;
+}
+
+.flip-turn-viewport.flip-turn-single
+  .flip-turn-active-fold-content
+  > .flip-turn-page-face-node {
+  transform: scaleX(-1);
+  opacity: var(--flip-turn-back-face-opacity);
 }
 
 .flip-turn-active-back-shadow {

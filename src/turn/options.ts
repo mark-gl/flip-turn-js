@@ -195,7 +195,8 @@ export function resolvedBackPageSource(
   }
 
   if (isSingleDisplayMode(state)) {
-    return null;
+    const turningIndex = turningPageIndex(state, direction);
+    return turningIndex === null ? null : (state.pages[turningIndex] ?? null);
   }
 
   const fallbackBackPage = defaultBackPageIndex(state, direction);

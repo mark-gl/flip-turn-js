@@ -1,9 +1,5 @@
 import { buildTurnRenderPlan } from "../layout/turn-plan";
-import {
-  isDoubleDisplayMode,
-  isSingleDisplayMode,
-  pageSourceAtIndex,
-} from "../layout/spread";
+import { isDoubleDisplayMode, pageSourceAtIndex } from "../layout/spread";
 import {
   activeTurnGradientOptions,
   resolvedBackPageSource,
@@ -65,6 +61,7 @@ type MountedStripContent = {
   pageHeight: number;
   flipHorizontal: boolean;
   wrapper: HTMLDivElement;
+  contentLayer: HTMLElement;
   shadowOverlay: HTMLDivElement | null;
 };
 
@@ -449,6 +446,7 @@ function syncStripContent(
   });
 
   const clone = sourceCache.clone.cloneNode(true) as HTMLElement;
+  let contentLayer: HTMLElement = clone;
   if (flipHorizontal) {
     const flippedWrapper = document.createElement("div");
     setStyle(flippedWrapper, {
@@ -463,6 +461,7 @@ function syncStripContent(
     });
     flippedWrapper.appendChild(clone);
     wrapper.appendChild(flippedWrapper);
+    contentLayer = flippedWrapper;
   } else {
     wrapper.appendChild(clone);
   }
@@ -474,6 +473,7 @@ function syncStripContent(
     pageHeight,
     flipHorizontal,
     wrapper,
+    contentLayer,
     shadowOverlay: null,
   };
   mountedStripContentByElement.set(strip, nextMountedContent);
@@ -570,7 +570,8 @@ function positionStrips(
   leftOffset: number,
   cylinder: CylinderParams,
   isBackFace: boolean,
-  shadowsEnabled: boolean
+  shadowsEnabled: boolean,
+  flipHorizontal: boolean
 ) {
   const stripSpace = computeStripSpace(pageWidth, pageHeight, cylinder);
   const shadowBackground = shadowsEnabled
@@ -638,9 +639,18 @@ function positionStrips(
       pageWidth,
       pageHeight,
       pageToStripMatrix(cylinder, stripSpace, visibleDistanceStart),
-      isBackFace,
+      flipHorizontal,
       shadowBackground
     );
+    const mounted = mountedStripContentByElement.get(strip);
+    if (mounted) {
+      mounted.wrapper.style.background = isBackFace
+        ? "var(--flip-turn-page-background)"
+        : "none";
+      mounted.contentLayer.style.opacity = isBackFace
+        ? "var(--flip-turn-back-face-opacity)"
+        : "1";
+    }
   }
 }
 
@@ -770,10 +780,9 @@ function renderMeshCurl(
   meshState.pageHeight = pageHeight;
 
   const frontSource = pageSourceAtIndex(state, plan.frontPage);
-  const backSource = isSingleDisplayMode(state)
-    ? pageSourceAtIndex(state, plan.baseSinglePage)
-    : resolvedBackPageSource(state, direction);
+  const backSource = resolvedBackPageSource(state, direction);
   const gradientOptions = activeTurnGradientOptions(state);
+  const backFaceReadsForward = isDoubleDisplayMode(state);
   const nextPageIndex =
     plan.baseSinglePage ??
     (activeTurn.side === "right" ? plan.baseRightPage : plan.baseLeftPage);
@@ -807,7 +816,8 @@ function renderMeshCurl(
     pageOffsetX,
     cylinder,
     false,
-    gradientOptions.front
+    gradientOptions.front,
+    false
   );
 
   positionStrips(
@@ -818,7 +828,8 @@ function renderMeshCurl(
     pageOffsetX,
     cylinder,
     true,
-    gradientOptions.back
+    gradientOptions.back,
+    backFaceReadsForward
   );
 
   renderNextPage(
