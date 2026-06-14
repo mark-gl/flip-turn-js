@@ -220,9 +220,11 @@ export function createFlipTurn(
 
     const detachedOptions = cloneApiBoundaryOptions(options);
     const dataOptions = optionsFromDataAttributes(rootElement);
-    const explicitPagesFromCaller = detachedOptions.pages !== undefined;
-    const explicitPagesFromData = dataOptions.pages !== undefined;
-    if (!explicitPagesFromCaller && !explicitPagesFromData) {
+    const explicitSources = detachedOptions.pages !== undefined;
+    const explicitCount =
+      detachedOptions.pageCount !== undefined ||
+      dataOptions.pageCount !== undefined;
+    if (!explicitSources && !explicitCount) {
       dataOptions.pages = readDomPages();
       useDomPages = true;
     }

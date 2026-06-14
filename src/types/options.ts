@@ -30,7 +30,8 @@ export type GoToPageOptions = {
 };
 
 export type FlipTurnOptions = {
-  pages: number | PageSourceInput[];
+  pages: PageSourceInput[];
+  pageCount: number;
   pageBuffer: number;
   page: number;
   display: DisplayOption;
@@ -54,5 +55,4 @@ export type ResolvedFlipTurnOptions = Omit<
 > & {
   corners: Record<Corner, boolean>;
   cornerOutset: number;
-  pageCount: number;
 };

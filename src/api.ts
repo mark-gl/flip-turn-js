@@ -26,6 +26,7 @@ export type FlipTurnApi = {
   update: (options: Partial<FlipTurnOptions>) => FlipTurnApi;
   readonly options: ResolvedFlipTurnOptions;
   readonly page: number;
+  readonly pageCount: number;
   goToPage: (pageNumber: number, options?: GoToPageOptions) => number;
   display: DisplayOption;
   next: () => boolean;
@@ -169,6 +170,11 @@ export function createFlipTurnApi({
     },
     page: {
       get: (): number => currentPublicPageNumber(state),
+      enumerable: true,
+      configurable: true,
+    },
+    pageCount: {
+      get: (): number => state.pageCount,
       enumerable: true,
       configurable: true,
     },

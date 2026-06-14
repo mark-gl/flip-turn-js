@@ -42,6 +42,7 @@ function createDefaultOptions(): FlipTurnOptions {
     cornerOutset: null,
     corners: { tl: true, tr: true, bl: true, br: true },
     pages: [],
+    pageCount: 0,
     pageBuffer: DEFAULT_PAGE_BUFFER,
     pageOptions: {},
     when: {},
@@ -69,13 +70,7 @@ export function cloneApiBoundaryOptions(
       ? { pageOptions: structuredClone(options.pageOptions) }
       : {}),
     ...(options.when !== undefined ? { when: { ...options.when } } : {}),
-    ...(options.pages !== undefined
-      ? {
-          pages: Array.isArray(options.pages)
-            ? [...options.pages]
-            : options.pages,
-        }
-      : {}),
+    ...(options.pages !== undefined ? { pages: [...options.pages] } : {}),
     ...(Array.isArray(options.hard) ? { hard: [...options.hard] } : {}),
   };
 }
@@ -88,7 +83,7 @@ export function cloneResolvedOptionsSnapshot(
     corners: { ...options.corners },
     pageOptions: structuredClone(options.pageOptions),
     when: { ...options.when },
-    pages: Array.isArray(options.pages) ? [...options.pages] : options.pages,
+    pages: [...options.pages],
     hard: Array.isArray(options.hard) ? [...options.hard] : options.hard,
   };
 }
@@ -132,12 +127,17 @@ function normalizePageTurnOptions(
   return Object.fromEntries(normalizedEntries);
 }
 
-function normalizePageCount(pageOption: number | PageSourceInput[]): number {
-  if (Array.isArray(pageOption)) {
-    return pageOption.length;
+function effectivePageCount(
+  pages: PageSourceInput[],
+  requestedCount: number
+): number {
+  if (pages.length > 0) {
+    return pages.length;
   }
 
-  return Number.isFinite(pageOption) ? Math.max(0, Math.floor(pageOption)) : 0;
+  return Number.isFinite(requestedCount)
+    ? Math.max(0, Math.floor(requestedCount))
+    : 0;
 }
 
 export function resolveOptions(
@@ -157,7 +157,7 @@ export function resolveOptions(
     when: { ...(detachedPartial.when ?? detachedBase.when) },
   };
 
-  const pageCount = normalizePageCount(merged.pages);
+  const pageCount = effectivePageCount(merged.pages, merged.pageCount);
   const normalizedPageValue =
     merged.page === undefined || merged.page === null
       ? 1
@@ -205,7 +205,7 @@ export function resolveOptions(
 export function pageListFromOptions(
   options: ResolvedFlipTurnOptions
 ): PageSource[] {
-  if (Array.isArray(options.pages)) {
+  if (options.pages.length > 0) {
     const slicedPages = options.pages.slice(0, options.pageCount);
     return slicedPages.map((source, index) => {
       if (!(source instanceof HTMLElement)) {

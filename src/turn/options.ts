@@ -1,5 +1,6 @@
 import { finiteAtLeastOne, finiteNonNegative } from "../core/math";
 import { resolveCornerSelection } from "../core/options";
+import { pageTurnOptionsFromDataAttributes } from "../dom/data-options";
 import {
   isSingleDisplayMode,
   pageSourceAtPublicPageNumber,
@@ -31,18 +32,26 @@ function spineMatePageNumber(
     : null;
 }
 
-function pageOverridesForDirection(
+function mergedPageOverrides(
   state: FlipTurnState,
-  direction: TurnDirection
+  pageIndex: number | null
 ): PageTurnOptions {
-  const pageIndex = turningPageIndex(state, direction);
   if (pageIndex === null) {
     return {};
   }
 
-  const pageNumber = pageIndex + 1;
-  const pageScoped = state.options.pageOptions[pageNumber] ?? {};
-  return pageScoped;
+  const fromElement = pageTurnOptionsFromDataAttributes(
+    state.pages[pageIndex]?.value
+  );
+  const fromApi = state.options.pageOptions[pageIndex + 1] ?? {};
+  return { ...fromElement, ...fromApi };
+}
+
+function pageOverridesForDirection(
+  state: FlipTurnState,
+  direction: TurnDirection
+): PageTurnOptions {
+  return mergedPageOverrides(state, turningPageIndex(state, direction));
 }
 
 function resolveGradientOptions(
@@ -80,18 +89,6 @@ export function activeTurnGradientOptions(
   );
 }
 
-function pageElementHardOverride(
-  state: FlipTurnState,
-  pageIndex: number | null
-): boolean | undefined {
-  if (pageIndex === null) return undefined;
-  const value = state.pages[pageIndex]?.value.dataset.hard;
-  if (value === undefined) return undefined;
-  if (value === "true" || value === "1" || value === "") return true;
-  if (value === "false" || value === "0") return false;
-  return undefined;
-}
-
 function isPageHardByOption(
   hard: HardOption,
   activePageNumber: number | null,
@@ -124,19 +121,13 @@ export function resolveTurnOptions(
     activePageNumber === null
       ? null
       : spineMatePageNumber(activePageNumber, state.pageCount);
-  const pairedPage =
-    pairedPageNumber === null
-      ? {}
-      : (state.options.pageOptions[pairedPageNumber] ?? {});
+  const pairedPage = mergedPageOverrides(
+    state,
+    pairedPageNumber === null ? null : pairedPageNumber - 1
+  );
 
-  const hardFromActivePage =
-    perPage.hard ?? pageElementHardOverride(state, activePageIndex);
-  const hardFromPairedPage =
-    pairedPage.hard ??
-    pageElementHardOverride(
-      state,
-      pairedPageNumber !== null ? pairedPageNumber - 1 : null
-    );
+  const hardFromActivePage = perPage.hard;
+  const hardFromPairedPage = pairedPage.hard;
   const resolvedHard =
     hardFromActivePage === true || hardFromPairedPage === true
       ? true
