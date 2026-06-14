@@ -38,6 +38,7 @@ export type FlipTurnOptions = {
   height: number | null;
   corners: CornerMask;
   cornerSize: number;
+  cornerOutset: number | null;
   duration: number;
   elevation: number;
   gradients: boolean;
@@ -47,7 +48,11 @@ export type FlipTurnOptions = {
   when: FlipTurnWhen;
 };
 
-export type ResolvedFlipTurnOptions = Omit<FlipTurnOptions, "corners"> & {
+export type ResolvedFlipTurnOptions = Omit<
+  FlipTurnOptions,
+  "corners" | "cornerOutset"
+> & {
   corners: Record<Corner, boolean>;
+  cornerOutset: number;
   pageCount: number;
 };

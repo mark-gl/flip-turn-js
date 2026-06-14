@@ -39,6 +39,7 @@ function createDefaultOptions(): FlipTurnOptions {
     hard: false,
     hardThickness: DEFAULT_HARD_THICKNESS_PX,
     cornerSize: DEFAULT_CORNER_SIZE_PX,
+    cornerOutset: null,
     corners: { tl: true, tr: true, bl: true, br: true },
     pages: [],
     pageBuffer: DEFAULT_PAGE_BUFFER,
@@ -178,6 +179,10 @@ export function resolveOptions(
       detachedBase.hardThickness
     ),
     cornerSize: finiteAtLeastOne(merged.cornerSize, detachedBase.cornerSize),
+    cornerOutset:
+      merged.cornerOutset === null || merged.cornerOutset === undefined
+        ? finiteAtLeastOne(merged.cornerSize, detachedBase.cornerSize)
+        : finiteNonNegative(merged.cornerOutset, 0),
     corners: resolveCornerSelection(merged.corners),
     pageBuffer: finiteFlooredWithin(
       merged.pageBuffer,

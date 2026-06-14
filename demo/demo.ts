@@ -8,6 +8,8 @@ import type { DisplayOption } from "../src/types/primitives";
 
 type RendererType = "dom" | "mesh";
 
+const CORNER_OUTSET_PX = 16;
+
 const rootElement = document.querySelector<HTMLDivElement>("#magazine");
 if (!rootElement) throw new Error("Missing #magazine");
 const root: HTMLDivElement = rootElement;
@@ -22,7 +24,7 @@ function buildRenderer(type: RendererType) {
 
 let flipTurn: FlipTurnApi = createFlipTurn(root, {
   renderer: buildRenderer(currentRendererType),
-  options: { display: currentDisplayOption },
+  options: { display: currentDisplayOption, cornerOutset: CORNER_OUTSET_PX },
 });
 
 const displayRadios = document.querySelectorAll<HTMLInputElement>(
@@ -97,6 +99,7 @@ function setRenderer(type: RendererType) {
     options: {
       page: savedPage,
       display: currentDisplayOption,
+      cornerOutset: CORNER_OUTSET_PX,
       hard: hardCoverModeEnabled ? "cover" : false,
       hardThickness: hardCoverThickness,
     },

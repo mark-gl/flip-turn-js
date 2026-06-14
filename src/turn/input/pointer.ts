@@ -59,6 +59,20 @@ function isPointerNearViewport(
   );
 }
 
+function isPointerBesideViewport(
+  clientX: number,
+  clientY: number,
+  box: ViewportBox,
+  margin: number
+): boolean {
+  return (
+    clientX >= box.left - margin &&
+    clientX <= box.left + box.width + margin &&
+    clientY >= box.top - margin &&
+    clientY <= box.top + box.height + margin
+  );
+}
+
 function cornerFromPointer(
   runtime: FlipTurnRuntime,
   event: Pick<PointerEvent, "clientX" | "clientY">
@@ -287,7 +301,7 @@ export function bindPointerEvents(
       return;
     }
 
-    const margin = state.options.cornerSize;
+    const margin = state.options.cornerOutset;
 
     if (!isPointerNearViewport(event.clientX, event.clientY, box, margin)) {
       if (state.activeTurn?.isPreview && shouldCancelPreviewTurn(runtime)) {
@@ -322,8 +336,8 @@ export function bindPointerEvents(
       return;
     }
 
-    const margin = state.options.cornerSize;
-    if (!isPointerNearViewport(event.clientX, event.clientY, box, margin)) {
+    const margin = state.options.cornerOutset;
+    if (!isPointerBesideViewport(event.clientX, event.clientY, box, margin)) {
       return;
     }
 
