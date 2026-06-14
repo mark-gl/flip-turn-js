@@ -27,6 +27,7 @@ export type FoldGeometry = {
 
 export type RenderPrimitives = {
   foldGeometry: FoldGeometry | null;
+  foldPoint: Point | null;
   shouldShowBackShadow: boolean;
   suppressActiveLayers?: boolean;
 };

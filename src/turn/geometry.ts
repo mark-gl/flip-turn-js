@@ -4,7 +4,9 @@ import {
   canTurnDirection,
   cornerPoint,
   directionFromCorner,
-  isDoubleDisplayMode,
+  isReversedSingleTurn,
+  isSingleDisplayMode,
+  isTopCorner,
   pageWidthForBox,
   sideForClientX,
   sideForCorner,
@@ -16,8 +18,21 @@ import type {
   TurnDirection,
 } from "../types/primitives";
 import type { ViewportBox } from "../types/renderer";
-import type { FlipTurnState } from "../types/state";
+import type { ActiveTurn, FlipTurnState } from "../types/state";
 import { isCornerAllowedForDirection, resolveTurnOptions } from "./options";
+
+const REVERSED_PREVIEW_FILL = 0.16;
+
+function reversedDragFoldPointX(fingerX: number, pageWidth: number): number {
+  return (-fingerX * fingerX) / pageWidth + 3 * fingerX - pageWidth;
+}
+
+function reversedDragFingerForFill(
+  fillFraction: number,
+  pageWidth: number
+): number {
+  return (pageWidth * (3 - Math.sqrt(9 - 8 * fillFraction))) / 2;
+}
 
 function pageOffsetFor(
   box: ViewportBox,
@@ -98,16 +113,42 @@ function progressFromTurnPoint(
   return clamp(pointX / pageWidth, 0, 1);
 }
 
+export function foldPointForActiveTurn(
+  state: FlipTurnState,
+  activeTurn: ActiveTurn
+): Point {
+  if (!isReversedSingleTurn(state, activeTurn.direction)) {
+    return activeTurn.point;
+  }
+
+  const foldPointX = reversedDragFoldPointX(
+    activeTurn.point.x,
+    activeTurn.pageWidth
+  );
+
+  return point(
+    clamp(foldPointX, -activeTurn.pageWidth, activeTurn.pageWidth),
+    activeTurn.point.y
+  );
+}
+
 export function syncActiveTurnProgress(state: FlipTurnState) {
   if (!state.activeTurn) {
     return;
   }
 
-  state.activeTurn.progress = progressFromTurnPoint(
+  const geometricProgress = progressFromTurnPoint(
     state.activeTurn.point.x,
     state.activeTurn.pageWidth,
     state.activeTurn.side
   );
+
+  state.activeTurn.progress = isReversedSingleTurn(
+    state,
+    state.activeTurn.direction
+  )
+    ? 1 - geometricProgress
+    : geometricProgress;
 }
 
 function cornerSizeForDirection(
@@ -135,7 +176,8 @@ export function cornerAtPoint(
 
   const side = sideForClientX(state, clientX, box);
   const isRightPage = side === "right";
-  const displayMode = isDoubleDisplayMode(state) ? "double" : "single";
+  const single = isSingleDisplayMode(state);
+  const displayMode = single ? "single" : "double";
   const localPoint = localPagePointFromClient(
     clientX,
     clientY,
@@ -146,23 +188,25 @@ export function cornerAtPoint(
     displayMode
   );
 
+  const onLeftEdge = localPoint.x <= backwardCornerSize;
+  const onRightEdge = localPoint.x >= pageWidth - forwardCornerSize;
+
   const innerSpineCorner =
-    isDoubleDisplayMode(state) &&
-    ((isRightPage && localPoint.x <= backwardCornerSize) ||
-      (!isRightPage && localPoint.x >= pageWidth - forwardCornerSize));
+    !single && ((isRightPage && onLeftEdge) || (!isRightPage && onRightEdge));
 
   if (innerSpineCorner) {
     return null;
   }
 
+  const canForwardHere = single || isRightPage;
+  const canBackwardHere = single || !isRightPage;
+
   const forwardOptions = resolveTurnOptions(state, "forward");
   const backwardOptions = resolveTurnOptions(state, "backward");
   const hardForwardFromRightEdge =
-    isRightPage &&
-    forwardOptions.hard &&
-    localPoint.x >= pageWidth - forwardCornerSize;
+    canForwardHere && forwardOptions.hard && onRightEdge;
   const hardBackwardFromLeftEdge =
-    !isRightPage && backwardOptions.hard && localPoint.x <= backwardCornerSize;
+    canBackwardHere && backwardOptions.hard && onLeftEdge;
 
   if (hardForwardFromRightEdge || hardBackwardFromLeftEdge) {
     if (hardForwardFromRightEdge && !canTurnDirection(state, "forward")) {
@@ -181,6 +225,13 @@ export function cornerAtPoint(
     return isTopHalf ? "tl" : "bl";
   }
 
+  if (single && onLeftEdge) {
+    const corner: Corner = localPoint.y <= box.height / 2 ? "tl" : "bl";
+    return isCornerAllowedForDirection(state, corner, "backward")
+      ? corner
+      : null;
+  }
+
   const maxVerticalCornerSize = Math.max(backwardCornerSize, forwardCornerSize);
   const isTop = localPoint.y <= maxVerticalCornerSize;
   const isBottom = localPoint.y >= box.height - maxVerticalCornerSize;
@@ -190,9 +241,9 @@ export function cornerAtPoint(
   }
 
   let corner: Corner | null = null;
-  if (localPoint.x <= backwardCornerSize) {
+  if (onLeftEdge) {
     corner = isTop ? "tl" : "bl";
-  } else if (localPoint.x >= pageWidth - forwardCornerSize) {
+  } else if (onRightEdge) {
     corner = isTop ? "tr" : "br";
   }
 
@@ -206,6 +257,25 @@ export function cornerAtPoint(
 
 export function cornerForDirection(direction: TurnDirection): Corner {
   return direction === "forward" ? "br" : "bl";
+}
+
+export function previewPointForTurn(
+  state: FlipTurnState,
+  direction: TurnDirection,
+  foldCorner: Corner,
+  pageWidth: number,
+  pageHeight: number,
+  cornerSize: number
+): Point {
+  if (isReversedSingleTurn(state, direction)) {
+    return point(
+      reversedDragFingerForFill(REVERSED_PREVIEW_FILL, pageWidth),
+      isTopCorner(foldCorner) ? 0 : pageHeight
+    );
+  }
+
+  const inset = constrainCornerSize(cornerSize, pageWidth, pageHeight) / 2;
+  return cornerPoint(foldCorner, pageWidth, pageHeight, inset);
 }
 
 export function syntheticPointerAtCorner(

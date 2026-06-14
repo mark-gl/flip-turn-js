@@ -19,10 +19,6 @@ function isForwardDirection(direction: TurnDirection): boolean {
   return direction === "forward";
 }
 
-function sideForDirection(direction: TurnDirection): "left" | "right" {
-  return isForwardDirection(direction) ? "right" : "left";
-}
-
 function spreadForDirection(
   state: FlipTurnState,
   direction: TurnDirection,
@@ -64,7 +60,12 @@ export function turningPageIndex(
   }
 
   if (isSingleDisplayMode(state)) {
-    return state.currentPageIndex;
+    if (isForwardDirection(direction)) {
+      return state.currentPageIndex;
+    }
+
+    const previousIndex = state.currentPageIndex - 1;
+    return previousIndex >= 0 ? previousIndex : null;
   }
 
   const spread = spreadPageIndicesAt(state, state.currentSpreadIndex);
@@ -133,11 +134,21 @@ function buildDoubleTurnPages(state: FlipTurnState, direction: TurnDirection) {
 
 function buildSingleTurnPages(state: FlipTurnState, direction: TurnDirection) {
   const destinationIndex = destinationIndexForDirection(state, direction);
+
+  if (!isForwardDirection(direction)) {
+    return {
+      basePage: state.currentPageIndex,
+      frontPage: destinationIndex,
+      backFace: null,
+      side: "right" as const,
+    };
+  }
+
   return {
     basePage: destinationIndex,
     frontPage: state.currentPageIndex,
     backFace: null,
-    side: sideForDirection(direction),
+    side: "right" as const,
   };
 }
 

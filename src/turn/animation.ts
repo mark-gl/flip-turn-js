@@ -1,5 +1,10 @@
 import { bezier, point } from "../core/math";
-import { cornerPoint, farCornerPoint, isTopCorner } from "../layout/spread";
+import {
+  cornerPoint,
+  farCornerPoint,
+  isReversedSingleTurn,
+  isTopCorner,
+} from "../layout/spread";
 import { render } from "../render/render";
 import type { Point } from "../types/primitives";
 import type { FlipTurnRuntime } from "../types/renderer";
@@ -180,11 +185,18 @@ export function animateTurnCommit(
   state.activeTurn.phase = "committing";
 
   const startPoint = point(state.activeTurn.point.x, state.activeTurn.point.y);
-  const endPoint = farCornerPoint(
-    state.activeTurn.corner,
-    state.activeTurn.pageWidth,
-    state.activeTurn.pageHeight
-  );
+  const endPoint = isReversedSingleTurn(state, state.activeTurn.direction)
+    ? cornerPoint(
+        state.activeTurn.corner,
+        state.activeTurn.pageWidth,
+        state.activeTurn.pageHeight,
+        0
+      )
+    : farCornerPoint(
+        state.activeTurn.corner,
+        state.activeTurn.pageWidth,
+        state.activeTurn.pageHeight
+      );
   const duration = releaseAnimationDuration(
     state,
     1 - state.activeTurn.progress
@@ -213,12 +225,18 @@ export function animateTurnRestore(
   state.activeTurn.phase = "restoring";
 
   const startPoint = point(state.activeTurn.point.x, state.activeTurn.point.y);
-  const endPoint = cornerPoint(
-    state.activeTurn.corner,
-    state.activeTurn.pageWidth,
-    state.activeTurn.pageHeight,
-    0
-  );
+  const endPoint = isReversedSingleTurn(state, state.activeTurn.direction)
+    ? farCornerPoint(
+        state.activeTurn.corner,
+        state.activeTurn.pageWidth,
+        state.activeTurn.pageHeight
+      )
+    : cornerPoint(
+        state.activeTurn.corner,
+        state.activeTurn.pageWidth,
+        state.activeTurn.pageHeight,
+        0
+      );
   const topCorner = isTopCorner(state.activeTurn.corner);
   const delta = topCorner
     ? Math.min(0, startPoint.y - endPoint.y) / 2

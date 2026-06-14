@@ -1,5 +1,6 @@
 import { computeFoldGeometry } from "../layout/fold";
 import {
+  isReversedSingleTurn,
   isSingleDisplayMode,
   spreadPageIndicesAt,
   pageBufferRange,
@@ -9,6 +10,7 @@ import {
   resolvedBackPageSource,
   shouldRenderBackGradient,
 } from "../turn/options";
+import { foldPointForActiveTurn } from "../turn/geometry";
 import type { FlipTurnRuntime, RenderPrimitives } from "../types/renderer";
 import type { FlipTurnState } from "../types/state";
 import { applyFoldTransform, constrainFoldPointX } from "./fold-transform";
@@ -33,9 +35,12 @@ function createRenderPrimitives(runtime: FlipTurnRuntime): RenderPrimitives {
   if (!activeTurn) {
     return {
       foldGeometry: null,
+      foldPoint: null,
       shouldShowBackShadow: false,
     };
   }
+
+  const foldPoint = foldPointForActiveTurn(runtime.state, activeTurn);
 
   return {
     foldGeometry: computeFoldGeometry(
@@ -43,14 +48,15 @@ function createRenderPrimitives(runtime: FlipTurnRuntime): RenderPrimitives {
       {
         x: constrainFoldPointX(
           activeTurn.corner,
-          activeTurn.point.x,
+          foldPoint.x,
           activeTurn.pageWidth
         ),
-        y: activeTurn.point.y,
+        y: foldPoint.y,
       },
       activeTurn.pageWidth,
       activeTurn.pageHeight
     ),
+    foldPoint,
     shouldShowBackShadow:
       runtime.state.activeTurnResolvedOptions?.hard === true
         ? false
@@ -136,17 +142,21 @@ function renderTurning(
   );
 
   setActiveLayerVisibility(activeLayers, true, primitives.shouldShowBackShadow);
-  updateActiveLayerOrder(
-    activeLayers,
-    state.activeTurn.side,
-    state.activeTurn.progress
-  );
+  const foldOpenProgress = isReversedSingleTurn(
+    state,
+    state.activeTurn.direction
+  )
+    ? 1 - state.activeTurn.progress
+    : state.activeTurn.progress;
+  updateActiveLayerOrder(activeLayers, state.activeTurn.side, foldOpenProgress);
 
   if (primitives.foldGeometry) {
     applyFoldTransform(
       state,
       activeLayers,
-      state.activeTurn,
+      primitives.foldPoint
+        ? { ...state.activeTurn, point: primitives.foldPoint }
+        : state.activeTurn,
       primitives.foldGeometry
     );
   }

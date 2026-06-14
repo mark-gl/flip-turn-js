@@ -1,5 +1,4 @@
 import { emitLifecycle, emitViewEntryBoundaryEvents } from "../core/events";
-import { constrainCornerSize } from "../core/math";
 import { clearActiveTurnState } from "../core/state";
 import type { FlipTurnEventSource } from "../types/lifecycle";
 import type { Corner, TurnDirection } from "../types/primitives";
@@ -7,7 +6,6 @@ import type { ViewportBox } from "../types/renderer";
 import { viewportBoxFromDomRect } from "../dom/dom";
 import {
   canTurnDirection,
-  cornerPoint,
   currentPublicPageNumber,
   currentTurnPosition,
   directionFromCorner,
@@ -25,6 +23,7 @@ import {
   createProgrammaticTurnStartOptions,
   startProgrammaticTurn,
 } from "./control-lifecycle";
+import { previewPointForTurn } from "./geometry";
 import { resolveTurnOptions } from "./options";
 
 const HOVER_PREVIEW_ELEVATION = 1;
@@ -416,11 +415,13 @@ export function startHoverPreview(
     state.activeTurnResolvedOptions?.cornerSize ??
     resolveTurnOptions(state, direction).cornerSize;
 
-  const previewPoint = cornerPoint(
-    corner,
+  const previewPoint = previewPointForTurn(
+    state,
+    direction,
+    state.activeTurn.corner,
     pageWidth,
     box.height,
-    constrainCornerSize(activeCornerSize, pageWidth, box.height) / 2
+    activeCornerSize
   );
   animateHoverPreview(runtime, previewPoint, undefined, "animate");
 }

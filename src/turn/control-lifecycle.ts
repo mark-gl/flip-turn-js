@@ -5,7 +5,9 @@ import {
   canTurnDirection,
   currentPublicPageNumber,
   currentTurnPosition,
+  isReversedSingleTurn,
   maxTurnPosition,
+  mirrorCornerHorizontally,
   pageWidthForBox,
   sideForCorner,
   turnPositionForPublicPage,
@@ -15,7 +17,11 @@ import { render } from "../render/render";
 import type { FlipTurnEventSource } from "../types/lifecycle";
 import type { Corner, TurnDirection } from "../types/primitives";
 import type { FlipTurnRuntime, ViewportBox } from "../types/renderer";
-import { animateTurnCommit, animateTurnRestore, stopAnimation } from "./animation";
+import {
+  animateTurnCommit,
+  animateTurnRestore,
+  stopAnimation,
+} from "./animation";
 import {
   cornerForDirection,
   localTurnPointFromClient,
@@ -85,8 +91,11 @@ export function beginTurn(
     return false;
   }
 
+  const foldCorner = isReversedSingleTurn(state, direction)
+    ? mirrorCornerHorizontally(corner)
+    : corner;
   const pageWidth = pageWidthForBox(state, box);
-  const side = sideForCorner(corner);
+  const side = sideForCorner(foldCorner);
   const localPoint = localTurnPointFromClient(
     pointerLike.clientX,
     pointerLike.clientY,
@@ -99,7 +108,7 @@ export function beginTurn(
 
   state.activeTurn = {
     direction,
-    corner,
+    corner: foldCorner,
     pageWidth,
     pageHeight: box.height,
     pointerId: pointerLike.pointerId,
@@ -172,8 +181,9 @@ export function shouldTurnOnRelease(
 
   const elapsed = now - state.activeTurn.pressedAt;
   if (
-    state.activeTurn.point.x < 0 ||
-    state.activeTurn.point.x > state.activeTurn.pageWidth
+    !isReversedSingleTurn(state, state.activeTurn.direction) &&
+    (state.activeTurn.point.x < 0 ||
+      state.activeTurn.point.x > state.activeTurn.pageWidth)
   ) {
     return true;
   }

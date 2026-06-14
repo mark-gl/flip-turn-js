@@ -20,6 +20,17 @@ const cornerMetadata: Record<Corner, { isRight: boolean; isBottom: boolean }> =
     br: { isRight: true, isBottom: true },
   };
 
+const horizontallyMirroredCorner: Record<Corner, Corner> = {
+  tl: "tr",
+  tr: "tl",
+  bl: "br",
+  br: "bl",
+};
+
+export function mirrorCornerHorizontally(corner: Corner): Corner {
+  return horizontallyMirroredCorner[corner];
+}
+
 export function isSingleDisplayMode(
   state: FlipTurnState,
   displayMode: DisplayMode = state.displayMode
@@ -32,6 +43,13 @@ export function isDoubleDisplayMode(
   displayMode: DisplayMode = state.displayMode
 ): boolean {
   return displayMode === "double";
+}
+
+export function isReversedSingleTurn(
+  state: FlipTurnState,
+  direction: TurnDirection
+): boolean {
+  return isSingleDisplayMode(state) && direction === "backward";
 }
 
 export function pageIndexFromPublicPageNumber(pageNumber: number): number {

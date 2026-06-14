@@ -1,7 +1,11 @@
 import type { Corner } from "../../types/primitives";
 import type { FlipTurnRuntime, ViewportBox } from "../../types/renderer";
 import { viewportBoxFromDomRect } from "../../dom/dom";
-import { directionFromCorner } from "../../layout/spread";
+import {
+  directionFromCorner,
+  isReversedSingleTurn,
+  mirrorCornerHorizontally,
+} from "../../layout/spread";
 import { render } from "../../render/render";
 import { animateHoverPreview, stopAnimation } from "../animation";
 import {
@@ -18,7 +22,7 @@ import {
   skipCommitAnimation,
   updateTurnPoint,
 } from "../control-lifecycle";
-import { cornerAtPoint } from "../geometry";
+import { cornerAtPoint, previewPointForTurn } from "../geometry";
 
 const PREVIEW_POINT_DELTA_THRESHOLD = 2;
 
@@ -105,7 +109,14 @@ function handlePreviewPointerMove(
     return true;
   }
 
-  if (state.activeTurn.corner !== corner) {
+  const foldCorner = isReversedSingleTurn(state, direction)
+    ? mirrorCornerHorizontally(corner)
+    : corner;
+
+  if (
+    state.activeTurn.corner !== foldCorner ||
+    state.activeTurn.direction !== direction
+  ) {
     stopAnimation(state);
     state.activeTurn = null;
     render(runtime);
@@ -113,17 +124,14 @@ function handlePreviewPointerMove(
     return true;
   }
 
-  const pageWidth = state.activeTurn.pageWidth;
-  const pageHeight = state.activeTurn.pageHeight;
-  const previewInset = state.options.cornerSize / 2;
-  const previewPoint =
-    corner === "tl"
-      ? { x: previewInset, y: previewInset }
-      : corner === "tr"
-        ? { x: pageWidth - previewInset, y: previewInset }
-        : corner === "bl"
-          ? { x: previewInset, y: pageHeight - previewInset }
-          : { x: pageWidth - previewInset, y: pageHeight - previewInset };
+  const previewPoint = previewPointForTurn(
+    state,
+    direction,
+    foldCorner,
+    state.activeTurn.pageWidth,
+    state.activeTurn.pageHeight,
+    state.options.cornerSize
+  );
   const deltaX = Math.abs(state.activeTurn.point.x - previewPoint.x);
   const deltaY = Math.abs(state.activeTurn.point.y - previewPoint.y);
 
