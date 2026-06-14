@@ -2,6 +2,7 @@ import { clamp, point } from "../core/math";
 import type {
   Corner,
   DisplayMode,
+  DisplayOption,
   Point,
   TurnDirection,
 } from "../types/primitives";
@@ -29,6 +30,16 @@ const horizontallyMirroredCorner: Record<Corner, Corner> = {
 
 export function mirrorCornerHorizontally(corner: Corner): Corner {
   return horizontallyMirroredCorner[corner];
+}
+
+export function resolveDisplayMode(
+  display: DisplayOption,
+  box: ViewportBox
+): DisplayMode {
+  if (display !== "auto") {
+    return display;
+  }
+  return box.width < box.height ? "single" : "double";
 }
 
 export function isSingleDisplayMode(

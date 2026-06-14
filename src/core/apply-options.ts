@@ -1,5 +1,7 @@
+import { viewportBoxFromDomRect } from "../dom/dom";
 import {
   currentPublicPageNumber,
+  resolveDisplayMode,
   setCurrentFromPublicPage,
 } from "../layout/spread";
 import { updatePageSourcesState } from "../render/page-lifecycle";
@@ -18,7 +20,13 @@ export function applyResolvedOptions(
   const previousPublicPage = currentPublicPageNumber(runtime.state);
   const detachedResolvedOptions = cloneResolvedOptionsSnapshot(resolvedOptions);
 
-  runtime.state.displayMode = detachedResolvedOptions.display;
+  const viewportBox = viewportBoxFromDomRect(
+    runtime.viewport.getBoundingClientRect()
+  );
+  runtime.state.displayMode = resolveDisplayMode(
+    detachedResolvedOptions.display,
+    viewportBox
+  );
   updatePageSourcesState(runtime.state, detachedResolvedOptions);
 
   runtime.state.pageCount = runtime.state.pages.length;

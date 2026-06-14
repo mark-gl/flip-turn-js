@@ -18,7 +18,7 @@ import type {
   PageSourceInput,
   ResolvedFlipTurnOptions,
 } from "./types/options";
-import type { DisplayMode } from "./types/primitives";
+import type { DisplayMode, DisplayOption } from "./types/primitives";
 import type { FlipTurnRuntime } from "./types/renderer";
 import type { FlipTurnState } from "./types/state";
 
@@ -27,7 +27,7 @@ export type FlipTurnApi = {
   readonly options: ResolvedFlipTurnOptions;
   readonly page: number;
   goToPage: (pageNumber: number, options?: GoToPageOptions) => number;
-  display: DisplayMode;
+  display: DisplayOption;
   next: () => boolean;
   previous: () => boolean;
   size: { width: number | null; height: number | null };
@@ -179,7 +179,7 @@ export function createFlipTurnApi({
     },
     display: {
       get: (): DisplayMode => state.displayMode,
-      set: (mode: DisplayMode) => updateOptions({ display: mode }),
+      set: (mode: DisplayOption) => updateOptions({ display: mode }),
       enumerable: true,
       configurable: true,
     },

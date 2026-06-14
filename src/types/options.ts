@@ -1,5 +1,5 @@
 import type { FlipTurnWhen } from "./lifecycle";
-import type { Corner, DisplayMode } from "./primitives";
+import type { Corner, DisplayOption } from "./primitives";
 
 export type CornerMask = Partial<Record<Corner, boolean>>;
 
@@ -33,7 +33,7 @@ export type FlipTurnOptions = {
   pages: number | PageSourceInput[];
   pageBuffer: number;
   page: number;
-  display: DisplayMode;
+  display: DisplayOption;
   width: number | null;
   height: number | null;
   corners: CornerMask;

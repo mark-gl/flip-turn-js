@@ -44,7 +44,9 @@ function parseDisplay(
   value: string | undefined,
   fallback: FlipTurnOptions["display"]
 ): FlipTurnOptions["display"] {
-  return value === "single" || value === "double" ? value : fallback;
+  return value === "single" || value === "double" || value === "auto"
+    ? value
+    : fallback;
 }
 
 function parseCornerMask(value: string | undefined): CornerMask | undefined {

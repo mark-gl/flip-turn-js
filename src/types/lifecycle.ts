@@ -7,7 +7,8 @@ export type FlipTurnEvent =
   | "turned"
   | "end"
   | "first"
-  | "last";
+  | "last"
+  | "display";
 
 export type FlipTurnEventSource =
   | "pointer"
@@ -48,6 +49,7 @@ export type FlipTurnWhen = Partial<{
   end: (payload: FlipTurnEventPayload) => void;
   first: (payload: FlipTurnEventPayload) => void;
   last: (payload: FlipTurnEventPayload) => void;
+  display: (payload: FlipTurnEventPayload) => void;
 }>;
 
 export type EventSubscription = {

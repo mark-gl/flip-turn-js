@@ -4,7 +4,7 @@ import {
   createFlipTurn,
 } from "../src/flip-turn";
 import type { FlipTurnApi } from "../src/api";
-import type { DisplayMode } from "../src/types/primitives";
+import type { DisplayOption } from "../src/types/primitives";
 
 type RendererType = "dom" | "mesh";
 
@@ -12,18 +12,7 @@ const rootElement = document.querySelector<HTMLDivElement>("#magazine");
 if (!rootElement) throw new Error("Missing #magazine");
 const root: HTMLDivElement = rootElement;
 
-const mobileLayoutQuery = window.matchMedia(
-  "(max-width: 900px), (pointer: coarse)"
-);
-let preferredDesktopMode: DisplayMode = "double";
-
-const initialDisplayMode: DisplayMode = mobileLayoutQuery.matches
-  ? "single"
-  : preferredDesktopMode;
-
-root.dataset.display = initialDisplayMode;
-root.classList.toggle("flip-turn-single", initialDisplayMode === "single");
-
+let currentDisplayOption: DisplayOption = "auto";
 let currentRendererType: RendererType = "dom";
 
 function buildRenderer(type: RendererType) {
@@ -33,10 +22,12 @@ function buildRenderer(type: RendererType) {
 
 let flipTurn: FlipTurnApi = createFlipTurn(root, {
   renderer: buildRenderer(currentRendererType),
+  options: { display: currentDisplayOption },
 });
 
-const btnDouble = document.querySelector<HTMLButtonElement>("#button-double");
-const btnSingle = document.querySelector<HTMLButtonElement>("#button-single");
+const displayRadios = document.querySelectorAll<HTMLInputElement>(
+  'input[name="display"]'
+);
 const btnHardCovers = document.querySelector<HTMLButtonElement>(
   "#button-hard-covers"
 );
@@ -77,12 +68,13 @@ function setHardCoverMode(enabled: boolean) {
   }
 }
 
-function setDisplay(mode: DisplayMode) {
-  flipTurn.display = mode;
-  root.dataset.display = mode;
-  root.classList.toggle("flip-turn-single", mode === "single");
-  btnDouble?.classList.toggle("active", mode === "double");
-  btnSingle?.classList.toggle("active", mode === "single");
+function setDisplay(option: DisplayOption) {
+  currentDisplayOption = option;
+  flipTurn.display = option;
+  root.dataset.display = option;
+  for (const radio of displayRadios) {
+    radio.checked = radio.value === option;
+  }
 }
 
 function syncRendererButton() {
@@ -97,7 +89,6 @@ function setRenderer(type: RendererType) {
   if (type === currentRendererType) return;
 
   const savedPage = flipTurn.page;
-  const savedDisplay = flipTurn.display;
   flipTurn.destroy();
   currentRendererType = type;
 
@@ -105,7 +96,7 @@ function setRenderer(type: RendererType) {
     renderer: buildRenderer(type),
     options: {
       page: savedPage,
-      display: savedDisplay,
+      display: currentDisplayOption,
       hard: hardCoverModeEnabled ? "cover" : false,
       hardThickness: hardCoverThickness,
     },
@@ -115,15 +106,13 @@ function setRenderer(type: RendererType) {
   syncRendererButton();
 }
 
-btnDouble?.addEventListener("click", () => {
-  preferredDesktopMode = "double";
-  setDisplay("double");
-});
-
-btnSingle?.addEventListener("click", () => {
-  preferredDesktopMode = "single";
-  setDisplay("single");
-});
+for (const radio of displayRadios) {
+  radio.addEventListener("change", () => {
+    if (radio.checked) {
+      setDisplay(radio.value as DisplayOption);
+    }
+  });
+}
 
 btnHardCovers?.addEventListener("click", () => {
   setHardCoverMode(!hardCoverModeEnabled);
@@ -145,20 +134,7 @@ hardCoverThicknessInput?.addEventListener("input", () => {
   }
 });
 
-function applyResponsiveDisplayMode() {
-  const isMobileLayout = mobileLayoutQuery.matches;
-
-  if (isMobileLayout) {
-    setDisplay("single");
-    return;
-  }
-
-  setDisplay(preferredDesktopMode);
-}
-
-mobileLayoutQuery.addEventListener("change", applyResponsiveDisplayMode);
-
-setDisplay(initialDisplayMode);
+setDisplay(currentDisplayOption);
 syncHardCoverThicknessLabel();
 setHardCoverMode(false);
 syncRendererButton();

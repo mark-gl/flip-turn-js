@@ -14,8 +14,9 @@ import {
   translate,
 } from "./dom/css-transforms";
 import { optionsFromDataAttributes } from "./dom/data-options";
+import { emitLifecycle } from "./core/events";
 import { domChildPageSources, viewportBoxFromDomRect } from "./dom/dom";
-import { pageWidthForBox } from "./layout/spread";
+import { pageWidthForBox, resolveDisplayMode } from "./layout/spread";
 import { createMeshRenderer } from "./render/mesh-renderer";
 import { createDomRenderer } from "./render/dom-renderer";
 import { render } from "./render/render";
@@ -118,6 +119,15 @@ export function createFlipTurn(
       const newBox = viewportBoxFromDomRect(
         rootElement.getBoundingClientRect()
       );
+
+      if (
+        !state.activeTurn &&
+        resolveDisplayMode(state.options.display, newBox) !== state.displayMode
+      ) {
+        applyResolvedOptions(runtime, state.options, false, "update");
+        emitLifecycle(state, "display", undefined, "update");
+      }
+
       runtime.renderer.resize?.(runtime, newBox);
 
       const { activeTurn } = state;

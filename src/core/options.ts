@@ -165,7 +165,10 @@ export function resolveOptions(
   return {
     ...merged,
     page: finiteFlooredWithin(normalizedPageValue, 1, { minimum: 1 }),
-    display: merged.display === "single" ? "single" : "double",
+    display:
+      merged.display === "single" || merged.display === "auto"
+        ? merged.display
+        : "double",
     duration: finiteNonNegative(merged.duration, detachedBase.duration),
     elevation: finiteNonNegative(merged.elevation, detachedBase.elevation),
     gradients: Boolean(merged.gradients),

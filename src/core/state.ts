@@ -16,6 +16,7 @@ const LIFECYCLE_EVENTS: FlipTurnEvent[] = [
   "end",
   "first",
   "last",
+  "display",
 ];
 
 function createEventSubscribers() {
@@ -33,7 +34,7 @@ export function createState(): FlipTurnState {
 
   return {
     options: initialOptions,
-    displayMode: initialOptions.display,
+    displayMode: initialOptions.display === "single" ? "single" : "double",
     pages: [] as PageSource[],
     pageCount: 0,
     currentSpreadIndex: 0,
