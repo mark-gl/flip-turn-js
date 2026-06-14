@@ -18,44 +18,44 @@
         </div>
       </div>
     </header>
-    <main class="demo-main">
-      <div class="settings">
-        <div class="display-modes" role="radiogroup" aria-label="Display mode">
-          <label>
-            <input type="radio" name="display" value="auto" checked />
-            Auto layout
-          </label>
-          <label>
-            <input type="radio" name="display" value="single" />
-            Single page
-          </label>
-          <label>
-            <input type="radio" name="display" value="double" />
-            Double page
-          </label>
-        </div>
-        <div class="toggles">
-          <button id="button-renderer">Mesh renderer: off</button>
-          <button id="button-hard-covers">Hard covers: off</button>
-          <label
-            id="hard-cover-thickness-setting"
-            class="setting-range"
-            for="hard-cover-thickness"
-            hidden
-          >
-            Cover thickness
-            <input
-              id="hard-cover-thickness"
-              type="range"
-              min="0"
-              max="24"
-              step="1"
-              value="8"
-            />
-            <span id="hard-cover-thickness-value">8px</span>
-          </label>
-        </div>
+    <div class="settings">
+      <div class="display-modes" role="radiogroup" aria-label="Display mode">
+        <label>
+          <input type="radio" name="display" value="auto" checked />
+          Auto layout
+        </label>
+        <label>
+          <input type="radio" name="display" value="single" />
+          Single page
+        </label>
+        <label>
+          <input type="radio" name="display" value="double" />
+          Double page
+        </label>
       </div>
+      <div class="toggles">
+        <button id="button-renderer">Mesh renderer: off</button>
+        <button id="button-hard-covers">Hard covers: off</button>
+        <label
+          id="hard-cover-thickness-setting"
+          class="setting-range"
+          for="hard-cover-thickness"
+          hidden
+        >
+          Cover thickness
+          <input
+            id="hard-cover-thickness"
+            type="range"
+            min="0"
+            max="24"
+            step="1"
+            value="8"
+          />
+          <span id="hard-cover-thickness-value">8px</span>
+        </label>
+      </div>
+    </div>
+    <main class="demo-main">
       <div id="magazine" data-display="auto">
         <img src="./assets/01.jpg" alt="Demo page 1" />
         <img src="./assets/02.jpg" alt="Demo page 2" />
