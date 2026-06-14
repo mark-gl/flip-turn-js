@@ -16,6 +16,7 @@ export type PageTurnOptions = Partial<{
   duration: number;
   corners: CornerMask;
   cornerSize: number;
+  previewSize: number;
   elevation: number;
   gradients: boolean | PageTurnGradientOptions;
   hard: boolean;
@@ -40,6 +41,7 @@ export type FlipTurnOptions = {
   corners: CornerMask;
   cornerSize: number;
   cornerOutset: number | null;
+  previewSize: number | null;
   duration: number;
   elevation: number;
   gradients: boolean;

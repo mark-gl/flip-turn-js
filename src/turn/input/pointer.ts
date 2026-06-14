@@ -144,7 +144,7 @@ function handlePreviewPointerMove(
     foldCorner,
     state.activeTurn.pageWidth,
     state.activeTurn.pageHeight,
-    state.options.cornerSize
+    state.options.previewSize ?? state.options.cornerSize
   );
   const deltaX = Math.abs(state.activeTurn.point.x - previewPoint.x);
   const deltaY = Math.abs(state.activeTurn.point.y - previewPoint.y);

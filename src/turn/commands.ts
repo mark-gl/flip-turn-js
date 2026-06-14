@@ -411,9 +411,9 @@ export function startHoverPreview(
     return;
   }
 
-  const activeCornerSize =
-    state.activeTurnResolvedOptions?.cornerSize ??
-    resolveTurnOptions(state, direction).cornerSize;
+  const activePreviewSize =
+    state.activeTurnResolvedOptions?.previewSize ??
+    resolveTurnOptions(state, direction).previewSize;
 
   const previewPoint = previewPointForTurn(
     state,
@@ -421,7 +421,7 @@ export function startHoverPreview(
     state.activeTurn.corner,
     pageWidth,
     box.height,
-    activeCornerSize
+    activePreviewSize
   );
   animateHoverPreview(runtime, previewPoint, undefined, "animate");
 }

@@ -265,7 +265,7 @@ export function previewPointForTurn(
   foldCorner: Corner,
   pageWidth: number,
   pageHeight: number,
-  cornerSize: number
+  previewSize: number
 ): Point {
   if (isReversedSingleTurn(state, direction)) {
     return point(
@@ -274,7 +274,7 @@ export function previewPointForTurn(
     );
   }
 
-  const inset = constrainCornerSize(cornerSize, pageWidth, pageHeight) / 2;
+  const inset = constrainCornerSize(previewSize, pageWidth, pageHeight) / 2;
   return cornerPoint(foldCorner, pageWidth, pageHeight, inset);
 }
 

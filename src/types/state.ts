@@ -18,6 +18,7 @@ export type ActiveTurnResolvedOptions = {
   hardThickness: number;
   corners: Record<Corner, boolean>;
   cornerSize: number;
+  previewSize: number;
   gradients: {
     front: boolean;
     back: boolean;

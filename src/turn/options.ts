@@ -145,6 +145,11 @@ export function resolveTurnOptions(
   const hardThicknessFromPages =
     perPage.hardThickness ?? pairedPage.hardThickness;
 
+  const resolvedCornerSize = finiteAtLeastOne(
+    perPage.cornerSize,
+    state.options.cornerSize
+  );
+
   return {
     duration: finiteNonNegative(perPage.duration, state.options.duration),
     elevation: finiteNonNegative(perPage.elevation, state.options.elevation),
@@ -157,7 +162,11 @@ export function resolveTurnOptions(
       perPage.corners !== undefined
         ? resolveCornerSelection(perPage.corners)
         : { ...state.options.corners },
-    cornerSize: finiteAtLeastOne(perPage.cornerSize, state.options.cornerSize),
+    cornerSize: resolvedCornerSize,
+    previewSize: finiteAtLeastOne(
+      perPage.previewSize ?? state.options.previewSize ?? undefined,
+      resolvedCornerSize
+    ),
     gradients: resolveGradientOptions(state, perPage.gradients),
   };
 }
